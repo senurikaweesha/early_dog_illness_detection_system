@@ -31,16 +31,14 @@ CORS(app, resources={
 # GLOBAL MODEL INSTANCE
 # ============================================
 
-print("=" * 60)
-print("🐕 LOADING AI MODEL...")
-print("=" * 60)
+print("LOADING AI MODEL...")
 
 try:
     # Load your trained model
     MODEL = create_production_model(weights_path='model/model_weights.json')
-    print("✅ Model loaded successfully!")
+    print("Model loaded successfully!")
 except Exception as e:
-    print(f"❌ Failed to load model: {e}")
+    print(f"Failed to load model: {e}")
     MODEL = None
 
 # ============================================
@@ -284,29 +282,29 @@ def predict():
         # ============================================
         # STEP 1: EXTRACT FRAMES
         # ============================================
-        print("\n📹 Step 1: Extracting frames...")
+        print("\nStep 1: Extracting frames...")
         frames = extract_frames(video_path, num_frames=30, target_size=(224, 224))
-        print(f"   ✅ Extracted {len(frames)} frames")
-        print(f"   ✅ Shape: {frames.shape}")
+        print(f"Extracted {len(frames)} frames")
+        print(f"Shape: {frames.shape}")
         
         # ============================================
         # STEP 2: PREPROCESS FRAMES
         # ============================================
-        print("\n🔧 Step 2: Preprocessing frames...")
+        print("\nStep 2: Preprocessing frames...")
         preprocessed_frames = preprocess_frames(frames)
-        print(f"   ✅ Normalized to [{preprocessed_frames.min():.3f}, {preprocessed_frames.max():.3f}]")
+        print(f"Normalized to [{preprocessed_frames.min():.3f}, {preprocessed_frames.max():.3f}]")
         
         # Add batch dimension: (1, 30, 224, 224, 3)
         input_data = np.expand_dims(preprocessed_frames, axis=0)
-        print(f"   ✅ Input shape: {input_data.shape}")
+        print(f"Input shape: {input_data.shape}")
         
         # ============================================
         # STEP 3: RUN AI MODEL PREDICTION
         # ============================================
-        print("\n🧠 Step 3: Running CNN+LSTM model...")
+        print("\nStep 3: Running CNN+LSTM model...")
         prediction = MODEL.predict(input_data, verbose=0)
         probability = float(prediction[0][0])
-        print(f"   ✅ Raw probability: {probability:.6f}")
+        print(f"Raw probability: {probability:.6f}")
         
         # ============================================
         # STEP 4: APPLY THRESHOLD & CLASSIFY
@@ -321,7 +319,7 @@ def predict():
         else:
             confidence = (1 - probability) * 100
         
-        print(f"\n📊 Classification Results:")
+        print(f"\nClassification Results:")
         print(f"   Threshold: {threshold}")
         print(f"   Probability: {probability:.4f}")
         print(f"   Classification: {classification}")
@@ -343,9 +341,9 @@ def predict():
             threshold=threshold
         )
         
-        print(f"   ✅ Generated {len(xai_result['observations'])} observations")
-        print(f"   ✅ Generated {len(xai_result['concerns'])} concerns")
-        print(f"   ✅ Generated {len(xai_result['recommendations'])} recommendations")
+        print(f"Generated {len(xai_result['observations'])} observations")
+        print(f"Generated {len(xai_result['concerns'])} concerns")
+        print(f"Generated {len(xai_result['recommendations'])} recommendations")
         
         # ============================================
         # STEP 6: CREATE RESULT
@@ -383,11 +381,9 @@ def predict():
         # ============================================
         print("\n🗑️  Step 7: GDPR compliance - deleting video...")
         cleanup_file(video_path)
-        print("   ✅ Video deleted (metadata retained)")
-        
-        print("\n" + "=" * 60)
-        print("✅ ANALYSIS COMPLETE!")
-        print("=" * 60)
+        print("Video deleted (metadata retained)")
+
+        print("ANALYSIS COMPLETE!")
         print(f"Classification: {classification}")
         print(f"Confidence: {confidence:.2f}%")
         print(f"Urgency: {urgency}")
@@ -400,7 +396,7 @@ def predict():
         if os.path.exists(video_path):
             cleanup_file(video_path)
         
-        print(f"\n❌ ERROR: {str(e)}")
+        print(f"\nERROR: {str(e)}")
         import traceback
         traceback.print_exc()
         
@@ -443,12 +439,12 @@ def internal_error(error):
 
 if __name__ == '__main__':
     print("\n" + "=" * 60)
-    print("🐕 Early Dog Illness Detection System - Backend API")
+    print("Early Dog Illness Detection System - Backend API")
     print("=" * 60)
-    print(f"📡 Starting Flask server...")
-    print(f"🔗 API available at: http://localhost:5000")
-    print(f"🌐 CORS enabled for: http://localhost:5173")
-    print(f"🧠 AI Model: {'✅ Loaded' if MODEL else '❌ Not Loaded'}")
+    print(f"Starting Flask server...")
+    print(f"API available at: http://localhost:5000")
+    print(f"CORS enabled for: http://localhost:5173")
+    print(f"AI Model: {'Loaded' if MODEL else 'Not Loaded'}")
     print("=" * 60 + "\n")
     
     app.run(debug=True, port=5001, host='0.0.0.0')
