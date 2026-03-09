@@ -1,0 +1,99 @@
+# ============================================
+# Operating System Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+*~
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*.pyc
+.Python
+build/
+venv/
+env/
+ENV/
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# ============================================
+# Node.js / React / Frontend
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================================
+# Backend / Flask
+# ============================================
+backend/uploads/
+backend/__pycache__/
+backend/.env
+backend/instance/
+
+# IMPORTANT: Exclude large model weights (87 MB)
+backend/model/model_weights.json
+
+# ============================================
+# Model Training
+# ============================================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Training datasets (if any large folders exist)
+model_training/datasets/
+model_training/data/
+model_training/checkpoints/
+model_training/saved_models/
+*.h5
+*.hdf5
+
+# TensorBoard logs
+model_training/runs/
+model_training/logs/
+
+# ============================================
+# Logs and Temporary Files
+# ============================================
+*.log
+*.tmp
+*.temp
+logs/
+temp/
+
+# ============================================
+# Large Media Files
+# ============================================
+*.mp4
+*.avi
+*.mov
+*.mpeg
+videos/
+test_videos/
+
+# ============================================
+# IDEs and Editors
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo

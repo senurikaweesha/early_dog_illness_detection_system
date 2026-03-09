@@ -1,0 +1,20 @@
+{
+  "class_name": "Functional",
+  "input_shape": "(None, 30, 224, 224, 3)",
+  "output_shape": "(None, 1)",
+  "total_params": 4039361,
+  "layer_count": 11,
+  "layer_names": [
+    "video_input",
+    "time_distributed",
+    "lstm",
+    "dropout_1",
+    "lstm_1",
+    "dropout_2",
+    "dense",
+    "dropout_3",
+    "dense_1",
+    "dropout_4",
+    "dense_2"
+  ]
+}

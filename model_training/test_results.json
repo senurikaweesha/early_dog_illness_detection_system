@@ -1,0 +1,18 @@
+{
+    "test_metrics": {
+        "accuracy": 0.875,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1_score": 0.857142808163268,
+        "auc": 0.9513888955116272,
+        "loss": 0.7647029757499695,
+        "specificity": 1.0,
+        "sensitivity": 0.75
+    },
+    "confusion_matrix": {
+        "true_negatives": 12,
+        "false_positives": 0,
+        "false_negatives": 3,
+        "true_positives": 9
+    }
+}
