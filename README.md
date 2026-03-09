@@ -22,7 +22,7 @@ An AI-powered web application that detects early signs of illness in dogs throug
 
 ---
 
-## 🎯 Performance Metrics
+## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
@@ -33,7 +33,7 @@ An AI-powered web application that detects early signs of illness in dogs throug
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 ```
 early_dog_illness_detection_system/
 ├── backend/              # Flask API
@@ -43,7 +43,7 @@ early_dog_illness_detection_system/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Backend
 ```bash
@@ -63,14 +63,14 @@ npm run dev
 
 ---
 
-## 📦 Large Files Excluded
+## Large Files Excluded
 
 **Model weights (87 MB):** `backend/model/model_weights.json`  
-Download: [Add Google Drive link]
+Download: https://drive.google.com/drive/folders/13ycMdviycvnwqCOAhhvVrNLBBS4Oc3BU?usp=sharing
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Backend:** Flask, TensorFlow, OpenCV  
 **Frontend:** React, Vite, Tailwind CSS  
@@ -78,7 +78,7 @@ Download: [Add Google Drive link]
 
 ---
 
-## 📞 Contact
+## Contact
 
 Herath Mudiyanselage Nethmini  
 Informatics Institute of Technology
