@@ -8,7 +8,7 @@
 
 ---
 
-## 📋 Project Overview
+## Project Overview
 
 An AI-powered web application that detects early signs of illness in dogs through behavioral video analysis using CNN+LSTM deep learning.
 
