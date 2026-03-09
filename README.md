@@ -1,4 +1,4 @@
-# Early Dog Illness Detection System
+git config user.email# Early Dog Illness Detection System
 
 **Author:** Herath Mudiyanselage Nethmini (H.M. Senuri Kaweesha Nethmini)  
 **Student ID:** 20221487 / W1956416  
@@ -66,7 +66,7 @@ npm run dev
 ## Large Files Excluded
 
 **Model weights (87 MB):** `backend/model/model_weights.json`  
-Download: https://drive.google.com/drive/folders/13ycMdviycvnwqCOAhhvVrNLBBS4Oc3BU?usp=sharing
+Download: https://drive.google.com/drive/folders/1svjW3yBRTfU-dHjbGg3QQJlCrr39e2tu?usp=sharing
 
 ---
 
