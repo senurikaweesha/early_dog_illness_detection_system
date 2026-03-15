@@ -13,6 +13,7 @@ import { HistoryPage } from "./src/pages/HistoryPage";
 import { DogsPage } from "./src/pages/DogsPage";
 import { AddDogPage } from "./src/pages/AddDogPage";
 import { VetDashboardPage } from "./src/pages/VetDashboardPage";
+
 export function App() {
   return (
     <AuthProvider>
@@ -63,8 +64,9 @@ export function App() {
                   }
                 />
 
+                {/* Dog Management Routes - UPDATED */}
                 <Route
-                  path="add-dog"
+                  path="dogs/add"
                   element={
                     <ProtectedRoute>
                       <AddDogPage />
@@ -73,7 +75,7 @@ export function App() {
                 />
 
                 <Route
-                  path="edit-dog/:id"
+                  path="dogs/edit/:id"
                   element={
                     <ProtectedRoute>
                       <AddDogPage />

@@ -1,3 +1,5 @@
+// File: frontend/src/utils/helpers.js
+
 export function formatDate(dateString) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
@@ -70,4 +72,52 @@ export function getPasswordStrength(password) {
   const hasSpecial = /[!@#$%^&*]/.test(password);
   if (hasNumber && hasSpecial) return "strong";
   return "medium";
+}
+
+/**
+ * Format age for display
+ * @param {number} age - Age in years (decimal)
+ * @returns {string} Formatted age string
+ * 
+ * Examples:
+ * 0.5 → "6 months"
+ * 0.92 → "11 months"
+ * 1 → "1 year"
+ * 1.5 → "1 year 6 months"
+ * 3 → "3 years"
+ */
+export function formatAge(age) {
+  // Handle invalid/missing age
+  if (!age || age < 0) return "Unknown";
+  if (age === 0) return "Newborn";
+
+  const years = Math.floor(age);
+  const months = Math.round((age - years) * 12);
+
+  // Less than 1 year (show only months)
+  if (years === 0) {
+    if (months === 0) return "Less than 1 month";
+    if (months === 1) return "1 month";
+    return `${months} months`;
+  }
+
+  // Exactly 1 year
+  if (years === 1 && months === 0) {
+    return "1 year";
+  }
+
+  // More than 1 year, no months
+  if (years > 1 && months === 0) {
+    return `${years} years`;
+  }
+
+  // 1 year with months
+  if (years === 1) {
+    const monthText = months === 1 ? "month" : "months";
+    return `1 year ${months} ${monthText}`;
+  }
+
+  // Multiple years with months
+  const monthText = months === 1 ? "month" : "months";
+  return `${years} years ${months} ${monthText}`;
 }

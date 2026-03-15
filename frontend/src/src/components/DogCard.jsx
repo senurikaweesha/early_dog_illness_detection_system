@@ -1,27 +1,23 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
-import {
-  DogIcon,
-  ActivityIcon,
-  Edit2Icon,
-  Trash2Icon,
-  HistoryIcon,
-} from "lucide-react";
+import { DogIcon, ActivityIcon } from "lucide-react";
 import { Button } from "./ui/Button";
+import { Badge } from "./ui/Badge";
 import { ConfirmationDialog } from "./ConfirmationDialog";
+
 export const DogCard = ({ dog, onViewHistory, onEdit, onDelete }) => {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const handleDelete = () => {
+    onDelete(dog.id);
+    setShowDeleteDialog(false);
+  };
+
   return (
     <>
-      <motion.div
-        whileHover={{
-          y: -4,
-        }}
-        className="card flex flex-col h-full"
-      >
-        <div className="flex items-start gap-4 mb-6">
-          <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-secondary/20">
+      <div className="card group hover:shadow-lg transition-shadow">
+        <div className="flex items-start gap-4 mb-4">
+          {/* Show photo if exists, otherwise show icon */}
+          <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
             {dog.photo ? (
               <img
                 src={dog.photo}
@@ -29,98 +25,73 @@ export const DogCard = ({ dog, onViewHistory, onEdit, onDelete }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <DogIcon className="w-10 h-10 text-secondary" />
+              <DogIcon className="w-8 h-8 text-secondary" />
             )}
           </div>
+
           <div className="flex-1 min-w-0">
-            <h3 className="text-xl font-bold text-primary truncate">
+            <h3 className="text-lg font-semibold text-primary mb-1 truncate">
               {dog.name}
             </h3>
-            <p className="text-sm text-gray-500 font-medium truncate">
-              {dog.breed}
-            </p>
-            <div className="flex items-center gap-3 mt-2 text-sm text-gray-600">
-              <span className="bg-gray-100 px-2 py-1 rounded-md">
-                {dog.age} years
-              </span>
-              <span className="bg-gray-100 px-2 py-1 rounded-md">
-                {dog.weight} kg
-              </span>
+            <p className="text-sm text-gray-500 mb-2">{dog.breed}</p>
+            <div className="flex items-center gap-3 text-sm text-gray-600">
+              <span>{dog.age} years</span>
+              <span className="text-gray-300">•</span>
+              <span>{dog.weight} kg</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-3 mb-6 flex items-center gap-3">
-          <div className="p-2 bg-white rounded-md shadow-sm text-accent-dark">
-            <ActivityIcon className="w-5 h-5" />
-          </div>
+        <div className="flex items-center gap-2 mb-4">
+          <ActivityIcon className="w-4 h-4 text-gray-400" />
           <div>
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-              Total Analyses
+            <p className="text-xs text-gray-500 uppercase tracking-wide">
+              TOTAL ANALYSES
             </p>
-            <p className="font-bold text-primary">
-              {dog.totalAnalyses} videos analyzed
+            <p className="text-sm font-medium text-gray-900">
+              {dog.totalAnalyses || 0} videos analyzed
             </p>
           </div>
         </div>
 
-        <div className="mt-auto flex flex-col gap-2">
+        <Button
+          variant="secondary"
+          fullWidth
+          onClick={() => onViewHistory(dog.id)}
+          className="mb-3"
+        >
+          View History
+        </Button>
+
+        <div className="flex gap-2">
           <Button
-            variant="secondary"
-            fullWidth
-            icon={<HistoryIcon className="w-4 h-4" />}
-            onClick={() => onViewHistory(dog.id)}
+            variant="ghost"
+            size="sm"
+            className="flex-1 border border-gray-200"
+            onClick={() => onEdit(dog.id)}
           >
-            View History
+            Edit
           </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              className="flex-1 border border-gray-200"
-              icon={<Edit2Icon className="w-4 h-4" />}
-              onClick={() => onEdit(dog.id)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="ghost"
-              className="flex-1 border border-gray-200 text-danger hover:bg-danger/10 hover:text-danger hover:border-danger/30"
-              icon={<Trash2Icon className="w-4 h-4" />}
-              onClick={() => setIsDeleteDialogOpen(true)}
-            >
-              Delete
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 border border-gray-200 text-danger hover:bg-danger/5 hover:border-danger"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            Delete
+          </Button>
         </div>
-      </motion.div>
+      </div>
 
       <ConfirmationDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={() => {
-          onDelete(dog.id);
-          setIsDeleteDialogOpen(false);
-        }}
-        title="Delete Dog Profile?"
-        message={`This will permanently delete ${dog.name} and all associated prediction history. This action cannot be undone.`}
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title="Delete Dog Profile"
+        message={`Are you sure you want to delete ${dog.name}'s profile? This action cannot be undone.`}
         confirmText="Delete"
-        variant="danger"
+        confirmVariant="danger"
       />
     </>
   );
-};
-
-DogCard.propTypes = {
-  dog: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    photo: PropTypes.string,
-    name: PropTypes.string.isRequired,
-    breed: PropTypes.string.isRequired,
-    age: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    weight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    totalAnalyses: PropTypes.number.isRequired,
-  }).isRequired,
-  onViewHistory: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func,
 };

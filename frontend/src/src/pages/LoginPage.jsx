@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DogIcon, MailIcon, LockIcon } from "lucide-react";
+import { DogIcon, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react"; // ✅ Single import
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
+
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,7 +16,9 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // ✅ Password visibility state
   const from = location.state?.from?.pathname || "/dashboard";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -35,6 +38,7 @@ export const LoginPage = () => {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-surface-muted">
       <motion.div
@@ -60,6 +64,7 @@ export const LoginPage = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
+            {/* Email Input */}
             <Input
               label="Email Address"
               name="email"
@@ -69,18 +74,35 @@ export const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               icon={<MailIcon className="w-5 h-5" />}
+              className="w-full"
             />
 
-            <Input
-              label="Password"
-              name="password"
-              type="password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              icon={<LockIcon className="w-5 h-5" />}
-            />
+            {/* Password Input with Show/Hide Toggle - ✅ CORRECTED */}
+            <div className="relative">
+              <Input
+                label="Password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                icon={<LockIcon className="w-5 h-5" />}
+              />
+              
+              {/* Eye Icon Button - ✅ MOVED HERE */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">

@@ -1,126 +1,154 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { PlusIcon, DogIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { PlusIcon, ActivityIcon } from "lucide-react";
 import { Button } from "../components/ui/Button";
-import { DogCard } from "../components/DogCard";
-import { PageHeader } from "../components/PageHeader";
-import { EmptyState } from "../components/EmptyState";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { getDogs, deleteDog } from "../services/api";
 import { useToast } from "../hooks/useToast";
-import { useFetchData } from "../hooks/useFetchData";
+import { getDogs, deleteDog } from "../services/api";
+import { formatAge } from "../utils/helpers"; // ← Add this import
 
 export const DogsPage = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const [dogs, setDogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const { data: dogs, loading, error, refetch } = useFetchData(getDogs);
+  useEffect(() => {
+    fetchDogs();
+  }, []);
 
-  const handleDelete = async (id) => {
+  const fetchDogs = async () => {
     try {
-      await deleteDog(id);
-      showToast("Dog profile deleted successfully", "success");
-      refetch();
+      setLoading(true);
+      const data = await getDogs();
+      setDogs(data);
     } catch (error) {
-      showToast("Failed to delete dog profile", "error");
+      showToast("Failed to load dogs", "error");
+    } finally {
+      setLoading(false);
     }
   };
-  if (loading || !dogs) {
-    return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
-          <div className="w-16 h-16 bg-danger/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Failed to Load Dogs</h3>
-          <p className="text-gray-500 mb-4">{error}</p>
-          <Button onClick={refetch}>
-            Retry
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const handleDelete = async (dogId) => {
+    if (window.confirm("Are you sure you want to delete this dog profile?")) {
+      try {
+        await deleteDog(dogId);
+        showToast("Dog profile deleted successfully", "success");
+        fetchDogs();
+      } catch (error) {
+        showToast("Failed to delete dog profile", "error");
+      }
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <PageHeader
-        heading="My Dogs"
-        description="Manage your registered dog profiles"
-        action={
-          <Button
-            icon={<PlusIcon className="w-5 h-5" />}
-            onClick={() => navigate("/add-dog")}
-          >
-            Add New Dog
-          </Button>
-        }
-      />
-
-      {dogs.length > 0 ? (
-        <motion.div
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          transition={{
-            delay: 0.2,
-          }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-primary">My Dogs</h1>
+          <p className="text-gray-500 mt-1">Manage your registered dog profiles</p>
+        </div>
+        <Button
+          onClick={() => navigate("/dogs/add")}
+          icon={<PlusIcon className="w-5 h-5" />}
         >
-          <AnimatePresence>
-            {dogs.map((dog, index) => (
-              <motion.div
-                key={dog.id}
-                layout
-                initial={{
-                  opacity: 0,
-                  scale: 0.9,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.9,
-                }}
-                transition={{
-                  duration: 0.2,
-                  delay: index * 0.1,
-                }}
-              >
-                <DogCard
-                  dog={dog}
-                  onViewHistory={(id) => navigate(`/history?dogId=${id}`)}
-                  onEdit={(id) => navigate(`/edit-dog/${id}`)}
-                  onDelete={handleDelete}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+          Add New Dog
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Loading dogs...</p>
+        </div>
+      ) : dogs.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No dogs registered yet</p>
+          <Button
+            onClick={() => navigate("/dogs/add")}
+            className="mt-4"
+            icon={<PlusIcon className="w-5 h-5" />}
+          >
+            Add Your First Dog
+          </Button>
+        </div>
       ) : (
-        <EmptyState
-          icon={<DogIcon className="w-12 h-12" />}
-          heading="No dogs added yet"
-          message="You haven't added any dogs yet. Add your first dog profile to start monitoring their health."
-          actionLabel="Add Your First Dog"
-          onAction={() => navigate("/add-dog")}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dogs.map((dog) => (
+            <motion.div
+              key={dog.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="card"
+            >
+              {/* Dog Photo */}
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {dog.photo ? (
+                    <img
+                      src={dog.photo}
+                      alt={dog.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-gray-400">
+                      {dog.name.charAt(0)}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-primary">{dog.name}</h3>
+                  <p className="text-sm text-gray-500">{dog.breed}</p>
+                  
+                  {/* AGE DISPLAY - UPDATED */}
+                  <div className="flex gap-4 mt-2 text-sm text-gray-600">
+                    <span>{formatAge(dog.age)}</span>
+                    <span>{dog.weight} kg</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Analyses */}
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wider mb-1">
+                  <ActivityIcon className="w-3 h-3" />
+                  Total Analyses
+                </div>
+                <p className="text-lg font-bold text-primary">
+                  {dog.totalAnalyses || 0} videos analyzed
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => navigate(`/history?dog=${dog.id}`)}
+                >
+                  View History
+                </Button>
+              </div>
+
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant="ghost"
+                  className="flex-1 border border-gray-200"
+                  onClick={() => navigate(`/dogs/edit/${dog.id}`)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex-1 border border-gray-200 text-red-600 hover:bg-red-50 hover:border-red-200"
+                  onClick={() => handleDelete(dog.id)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       )}
     </div>
   );

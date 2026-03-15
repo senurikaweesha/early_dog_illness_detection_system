@@ -158,7 +158,7 @@ def add_dog():
             "weight": data.get('weight'),
             "gender": data.get('gender'),
             "notes": data.get('notes', ''),
-            "photo": None,
+            "photo": data.get('photo'),  # ✅ CHANGED: Get photo from request
             "totalAnalyses": 0,
             "createdAt": datetime.now().isoformat()
         }
@@ -184,6 +184,7 @@ def update_dog(dog_id):
                 dog['weight'] = data.get('weight', dog['weight'])
                 dog['gender'] = data.get('gender', dog['gender'])
                 dog['notes'] = data.get('notes', dog['notes'])
+                dog['photo'] = data.get('photo', dog.get('photo'))  # ✅ ADDED: Update photo
                 dog['updatedAt'] = datetime.now().isoformat()
                 
                 return jsonify(dog), 200

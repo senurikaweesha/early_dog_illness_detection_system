@@ -1,35 +1,46 @@
-import React, { memo } from "react";
-import PropTypes from "prop-types";
-export const Badge = memo(({ variant, children, className = "" }) => {
-  const variantClasses = {
-    normal: "badge-normal",
-    abnormal: "badge-abnormal",
-    low: "badge-low",
-    medium: "badge-medium",
-    high: "badge-high",
-    pending:
-      "bg-warning/10 text-warning-dark font-medium px-2.5 py-0.5 rounded-full text-xs",
-    reviewed:
-      "bg-success/10 text-success-dark font-medium px-2.5 py-0.5 rounded-full text-xs",
+import React from 'react';
+import PropTypes from 'prop-types';
+
+export const Badge = ({ variant, children, className = '' }) => {
+  const variants = {
+    // Classification badges - Bold with square design
+    normal: 'bg-green-50 text-green-700 border-2 border-green-100 font-bold',
+    abnormal: 'bg-red-50 text-red-700 border-2 border-red-100 font-bold',
+    
+    // Urgency badges - Square design
+    low: 'bg-blue-50 text-blue-700 border border-blue-200',
+    moderate: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+    high: 'bg-red-50 text-red-700 border border-red-200',
+    
+    // Default
+    default: 'bg-gray-100 text-gray-700 border border-gray-200',
   };
+
+  // Changed: rounded-full → rounded (square/rectangular boxes)
+  const baseClasses = 'inline-flex items-center px-3 py-1 rounded text-xs uppercase tracking-wide';
+  const variantClasses = variants[variant] || variants.default;
+
   return (
-    <span
-      className={`inline-flex items-center justify-center ${variantClasses[variant]} ${className}`}
-    >
+    <span className={`${baseClasses} ${variantClasses} ${className}`}>
       {children}
     </span>
   );
-});
-
-Badge.displayName = 'Badge';
+};
 
 Badge.propTypes = {
+  variant: PropTypes.oneOf([
+    'normal',
+    'abnormal',
+    'low',
+    'moderate',
+    'high',
+    'default',
+  ]),
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(['normal', 'abnormal', 'low', 'medium', 'high', 'pending', 'reviewed']),
   className: PropTypes.string,
 };
 
 Badge.defaultProps = {
-  variant: 'normal',
+  variant: 'default',
   className: '',
 };

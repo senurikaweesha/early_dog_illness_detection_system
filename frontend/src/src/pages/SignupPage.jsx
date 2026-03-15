@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DogIcon, UserIcon, MailIcon, LockIcon } from "lucide-react";
+import { DogIcon, UserIcon, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useAuth } from "../hooks/useAuth";
@@ -11,6 +11,7 @@ import {
   validatePassword,
   getPasswordStrength,
 } from "../utils/helpers";
+
 export const SignupPage = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
@@ -25,6 +26,9 @@ export const SignupPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -39,6 +43,7 @@ export const SignupPage = () => {
       }));
     }
   };
+
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
@@ -56,6 +61,7 @@ export const SignupPage = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -75,12 +81,14 @@ export const SignupPage = () => {
       setIsSubmitting(false);
     }
   };
+
   const pwdStrength = getPasswordStrength(formData.password);
   const strengthColors = {
     weak: "bg-danger",
     medium: "bg-warning",
     strong: "bg-success",
   };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-surface-muted">
       <motion.div
@@ -102,7 +110,7 @@ export const SignupPage = () => {
             Create Account
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join EDIDS to monitor your dog's health
+            Join with us to monitor your dog's health
           </p>
         </div>
 
@@ -130,20 +138,35 @@ export const SignupPage = () => {
               onChange={handleChange}
               error={errors.email}
               icon={<MailIcon className="w-5 h-5" />}
+              className="w-full"
             />
 
             <div>
-              <Input
-                label="Password"
-                name="password"
-                type="password"
-                required
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                error={errors.password}
-                icon={<LockIcon className="w-5 h-5" />}
-              />
+              <div className="relative">
+                <Input
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={errors.password}
+                  icon={<LockIcon className="w-5 h-5" />}
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
 
               {formData.password && (
                 <div className="mt-2 flex items-center gap-2">
@@ -167,17 +190,31 @@ export const SignupPage = () => {
               )}
             </div>
 
-            <Input
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              required
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={errors.confirmPassword}
-              icon={<LockIcon className="w-5 h-5" />}
-            />
+            <div className="relative">
+              <Input
+                label="Confirm Password"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                error={errors.confirmPassword}
+                icon={<LockIcon className="w-5 h-5" />}
+              />
+              
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
 
             <div className="pt-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -193,7 +230,6 @@ export const SignupPage = () => {
                     onChange={handleChange}
                     className="w-4 h-4 text-secondary focus:ring-secondary border-gray-300"
                   />
-
                   <span className="text-sm text-gray-700">Dog Owner</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -205,7 +241,6 @@ export const SignupPage = () => {
                     onChange={handleChange}
                     className="w-4 h-4 text-secondary focus:ring-secondary border-gray-300"
                   />
-
                   <span className="text-sm text-gray-700">Veterinarian</span>
                 </label>
               </div>
