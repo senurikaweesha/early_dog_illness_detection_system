@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -158,7 +159,7 @@ def add_dog():
             "weight": data.get('weight'),
             "gender": data.get('gender'),
             "notes": data.get('notes', ''),
-            "photo": data.get('photo'),  # ✅ CHANGED: Get photo from request
+            "photo": data.get('photo'),
             "totalAnalyses": 0,
             "createdAt": datetime.now().isoformat()
         }
@@ -184,7 +185,7 @@ def update_dog(dog_id):
                 dog['weight'] = data.get('weight', dog['weight'])
                 dog['gender'] = data.get('gender', dog['gender'])
                 dog['notes'] = data.get('notes', dog['notes'])
-                dog['photo'] = data.get('photo', dog.get('photo'))  # ✅ ADDED: Update photo
+                dog['photo'] = data.get('photo', dog.get('photo'))
                 dog['updatedAt'] = datetime.now().isoformat()
                 
                 return jsonify(dog), 200
@@ -276,9 +277,7 @@ def predict():
     file.save(video_path)
     
     try:
-        print("\n" + "=" * 60)
         print(f"🎥 ANALYZING VIDEO: {file.filename}")
-        print("=" * 60)
         
         # ============================================
         # STEP 1: EXTRACT FRAMES
@@ -388,7 +387,6 @@ def predict():
         print(f"Classification: {classification}")
         print(f"Confidence: {confidence:.2f}%")
         print(f"Urgency: {urgency}")
-        print("=" * 60 + "\n")
         
         return jsonify(result), 200
         
@@ -439,13 +437,11 @@ def internal_error(error):
 # ============================================
 
 if __name__ == '__main__':
-    print("\n" + "=" * 60)
     print("Early Dog Illness Detection System - Backend API")
-    print("=" * 60)
+
     print(f"Starting Flask server...")
     print(f"API available at: http://localhost:5000")
     print(f"CORS enabled for: http://localhost:5173")
     print(f"AI Model: {'Loaded' if MODEL else 'Not Loaded'}")
-    print("=" * 60 + "\n")
     
     app.run(debug=True, port=5001, host='0.0.0.0')

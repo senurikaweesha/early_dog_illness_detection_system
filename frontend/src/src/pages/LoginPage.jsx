@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DogIcon, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react"; // ✅ Single import
+import { DogIcon, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useAuth } from "../hooks/useAuth";
@@ -16,7 +16,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // ✅ Password visibility state
+  const [showPassword, setShowPassword] = useState(false);
   const from = location.state?.from?.pathname || "/dashboard";
 
   const handleSubmit = async (e) => {
@@ -77,7 +77,6 @@ export const LoginPage = () => {
               className="w-full"
             />
 
-            {/* Password Input with Show/Hide Toggle - ✅ CORRECTED */}
             <div className="relative">
               <Input
                 label="Password"
@@ -90,7 +89,6 @@ export const LoginPage = () => {
                 icon={<LockIcon className="w-5 h-5" />}
               />
               
-              {/* Eye Icon Button - ✅ MOVED HERE */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}

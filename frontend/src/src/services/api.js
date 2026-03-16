@@ -155,8 +155,8 @@ export const deleteHistory = async (id) => {
 export const getDogs = async () => {
   const response = await api.get(API_ENDPOINTS.DOGS);
 
-  // 🔍 DEBUG: Log raw backend response
-  console.log("🔍 RAW BACKEND RESPONSE:", response.data);
+  // DEBUG: Log raw backend response
+  console.log("RAW BACKEND RESPONSE:", response.data);
 
   // MOCK: Filter dogs by current user
   const currentUserObj = localStorage.getItem("currentUser");
@@ -180,8 +180,8 @@ export const getDogs = async () => {
 
   const filtered = response.data.filter(dog => ownershipMap[dog.id] === currentUser.id);
   
-  // 🔍 DEBUG: Log filtered result
-  console.log("🔍 FILTERED DOGS:", filtered);
+  // DEBUG: Log filtered result
+  console.log("FILTERED DOGS:", filtered);
   
   return filtered;
 };
@@ -194,13 +194,13 @@ export const getDogById = async (id) => {
 };
 
 export const addDog = async (dogData) => {
-  // 🔍 DEBUG: Log what we're sending
-  console.log("📤 SENDING DOG DATA:", dogData);
+  // DEBUG: Log what we're sending
+  console.log("SENDING DOG DATA:", dogData);
   
   const response = await api.post(API_ENDPOINTS.DOGS, dogData);
   
-  // 🔍 DEBUG: Log what backend returned
-  console.log("📥 BACKEND RETURNED:", response.data);
+  // DEBUG: Log what backend returned
+  console.log("BACKEND RETURNED:", response.data);
 
   // MOCK: Save ownership
   const currentUserObj = localStorage.getItem("currentUser");
