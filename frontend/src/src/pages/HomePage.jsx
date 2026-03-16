@@ -74,8 +74,7 @@ export const HomePage = () => {
                 Detect Early Signs of Illness in Your Dog
               </h1>
               <p className="text-xl sm:text-2xl text-accent-light mb-10 max-w-2xl font-light">
-                AI-powered behavioral analysis to help you monitor your dog's
-                health
+                Simply upload a short video of your dog. Our AI analyzes behavior patterns to identify possible discomfort or health issues before they become serious.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
