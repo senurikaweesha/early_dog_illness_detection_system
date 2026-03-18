@@ -46,9 +46,39 @@ except Exception as e:
 # IN-MEMORY DATABASE
 # ============================================
 
-dogs_db = []
-history_db = []
-users_db = []
+
+# ============================================
+# DATA PERSISTENCE FUNCTIONS
+# ============================================
+
+DATA_DIR = 'data'
+DOGS_FILE = os.path.join(DATA_DIR, 'dogs.json')
+HISTORY_FILE = os.path.join(DATA_DIR, 'history.json')
+USERS_FILE = os.path.join(DATA_DIR, 'users.json')
+
+def ensure_data_dir():
+    """Create data directory if it doesn't exist"""
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
+
+def save_to_file(data, filepath):
+    """Save data to JSON file"""
+    ensure_data_dir()
+    import json
+    with open(filepath, 'w') as f:
+        json.dump(data, f, indent=2)
+
+def load_from_file(filepath):
+    """Load data from JSON file"""
+    import json
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as f:
+            return json.load(f)
+    return []
+
+dogs_db = load_from_file(DOGS_FILE)
+history_db = load_from_file(HISTORY_FILE)
+users_db = load_from_file(USERS_FILE)
 
 # ============================================
 # HELPER FUNCTIONS
@@ -86,6 +116,7 @@ def register():
         }
         
         users_db.append(new_user)
+        save_to_file(users_db, USERS_FILE)
         
         return jsonify({
             "message": "Registration successful",
@@ -114,6 +145,7 @@ def login():
                 "createdAt": datetime.now().isoformat()
             }
             users_db.append(user)
+            save_to_file(users_db, USERS_FILE)
         
         return jsonify({
             "message": "Login successful",
@@ -165,6 +197,7 @@ def add_dog():
         }
         
         dogs_db.append(new_dog)
+        save_to_file(dogs_db, DOGS_FILE)
         
         return jsonify(new_dog), 201
         
@@ -187,6 +220,7 @@ def update_dog(dog_id):
                 dog['notes'] = data.get('notes', dog['notes'])
                 dog['photo'] = data.get('photo', dog.get('photo'))
                 dog['updatedAt'] = datetime.now().isoformat()
+                save_to_file(dogs_db, DOGS_FILE)
                 
                 return jsonify(dog), 200
         
@@ -205,6 +239,8 @@ def delete_dog(dog_id):
     
     if len(dogs_db) < initial_length:
         history_db = [h for h in history_db if h['dogId'] != dog_id]
+        save_to_file(dogs_db, DOGS_FILE)
+        save_to_file(history_db, HISTORY_FILE)
         return jsonify({"message": "Dog deleted successfully"}), 200
     else:
         return jsonify({"error": "Dog not found"}), 404
@@ -232,6 +268,7 @@ def delete_history(history_id):
     
     initial_length = len(history_db)
     history_db = [h for h in history_db if h['id'] != history_id]
+    save_to_file(history_db, HISTORY_FILE)
     
     if len(history_db) < initial_length:
         return jsonify({"message": "Record deleted successfully"}), 200
@@ -372,9 +409,11 @@ def predict():
         
         # Save to history
         history_db.append(result)
+        save_to_file(history_db, HISTORY_FILE)
         
         # Update dog's total analyses count
         dog['totalAnalyses'] = dog.get('totalAnalyses', 0) + 1
+        save_to_file(dogs_db, DOGS_FILE)
         
         # ============================================
         # STEP 7: CLEANUP (GDPR)

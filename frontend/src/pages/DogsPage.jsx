@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { PlusIcon, ActivityIcon } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useToast } from "../hooks/useToast";
 import { getDogs, deleteDog } from "../services/api";
-import { formatAge } from "../utils/helpers"; // ← Add this import
+import { formatAge } from "../utils/helpers";
+import { PlusIcon, Dog, Activity } from "lucide-react";
 
 export const DogsPage = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [dogs, setDogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     fetchDogs();
@@ -49,7 +50,7 @@ export const DogsPage = () => {
           <p className="text-gray-500 mt-1">Manage your registered dog profiles</p>
         </div>
         <Button
-          onClick={() => navigate("/dogs/add")}
+          onClick={() => navigate("/add-dog")}
           icon={<PlusIcon className="w-5 h-5" />}
         >
           Add New Dog
@@ -64,7 +65,7 @@ export const DogsPage = () => {
         <div className="text-center py-12">
           <p className="text-gray-500">No dogs registered yet</p>
           <Button
-            onClick={() => navigate("/dogs/add")}
+            onClick={() => navigate("/add-dog")}
             className="mt-4"
             icon={<PlusIcon className="w-5 h-5" />}
           >
@@ -90,9 +91,9 @@ export const DogsPage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-2xl font-bold text-gray-400">
-                      {dog.name.charAt(0)}
-                    </span>
+                     <div className="w-full h-full bg-blue-50 flex items-center justify-center">
+                      <Dog className="w-10 h-10 text-blue-800" strokeWidth={1.5} />
+                    </div>
                   )}
                 </div>
 
@@ -111,7 +112,7 @@ export const DogsPage = () => {
               {/* Total Analyses */}
               <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wider mb-1">
-                  <ActivityIcon className="w-3 h-3" />
+                  <Activity className="w-3 h-3" />
                   Total Analyses
                 </div>
                 <p className="text-lg font-bold text-primary">
@@ -134,7 +135,7 @@ export const DogsPage = () => {
                 <Button
                   variant="ghost"
                   className="flex-1 border border-gray-200"
-                  onClick={() => navigate(`/dogs/edit/${dog.id}`)}
+                  onClick={() => navigate(`/edit-dog/${dog.id}`)}
                 >
                   Edit
                 </Button>

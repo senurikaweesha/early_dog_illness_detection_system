@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { DogIcon, ActivityIcon } from "lucide-react";
+import { Dog, ActivityIcon } from "lucide-react";
 import { Button } from "./ui/Button";
-import { Badge } from "./ui/Badge";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
 export const DogCard = ({ dog, onViewHistory, onEdit, onDelete }) => {
@@ -25,7 +24,7 @@ export const DogCard = ({ dog, onViewHistory, onEdit, onDelete }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <DogIcon className="w-8 h-8 text-secondary" />
+              <Dog className="w-8 h-8 text-secondary" />
             )}
           </div>
 

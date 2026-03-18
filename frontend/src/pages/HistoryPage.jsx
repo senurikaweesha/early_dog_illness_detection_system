@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SearchIcon,
@@ -28,6 +28,7 @@ import { useFetchData } from "../hooks/useFetchData";
 import { formatDate, formatConfidence } from "../utils/helpers";
 export const HistoryPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const initialPredictionId = searchParams.get("id");
   const { showToast } = useToast();
