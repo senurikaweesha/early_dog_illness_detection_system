@@ -81,14 +81,6 @@ npm run dev
 
 ---
 
-##  Large Files Excluded
-
-**Model weights (87 MB):** The actual neural network weights are not included directly in source control due to file size limits.
-* **File:** `backend/model/model_weights.json` (and associated `.h5` / `.keras` weights).
-* **Download Link:** [Google Drive - Model Weights Folder](https://drive.google.com/drive/folders/1svjW3yBRTfU-dHjbGg3QQJlCrr39e2tu?usp=sharing)
-
----
-
 ##  Tech Stack
 
 * **Backend:** Flask, TensorFlow/Keras, OpenCV, Python
@@ -99,8 +91,8 @@ npm run dev
 
 ##  Contact & Author Info
 
-**Herath Mudiyanselage Nethmini (H.M. Senuri Kaweesha Nethmini)**  
-*Student ID:* 20221487 | W1956416  
-*Institution:* Informatics Institute of Technology (IIT), University of Westminster, UK  
-*Supervisor:* Mr. Obhasha Priyankara  
-*Academic Year:* 2025/2026
+**Herath Mudiyanselage Nethmini**  
+**Student ID:* 20221487 | W1956416**  
+**Institution:* Informatics Institute of Technology (IIT), University of Westminster, UK**  
+**Supervisor:* Mr. Obhasha Priyankara** 
+**Academic Year:* 2025/2026**
