@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🐾 TrustPaw AI</h1>
+  <h1> TrustPaw AI</h1>
   <p><strong>Early Dog Illness Detection System</strong></p>
   <p>
     <a href="https://github.com/senurikaweesha/early_dog_illness_detection_system">
@@ -15,11 +15,11 @@ The initial version of this README included earlier preliminary metrics (91.67% 
 
 ---
 
-## 📋 Project Overview
+##  Project Overview
 
 An AI-powered web application that detects early signs of illness in dogs through behavioral video analysis using a CNN+LSTM deep learning architecture.
 
-### 🌟 Key Features
+###  Key Features
 - **Binary Classification:** Classifies dog behavior as *Normal* or *Abnormal*.
 - **CNN+LSTM Hybrid Architecture:** Utilizes a `MobileNetV2` backbone for spatial feature extraction combined with an LSTM network for temporal sequence modeling.
 - **Explainable AI (XAI):** Transparent insights into the model's predictions (e.g., Grad-CAM like visualizations or probability analysis).
@@ -28,7 +28,7 @@ An AI-powered web application that detects early signs of illness in dogs throug
 
 ---
 
-## 📊 Performance Metrics
+##  Performance Metrics
 
 Following rigorous evaluation on the test set, the final performance metrics for the model are:
 
@@ -49,7 +49,7 @@ Following rigorous evaluation on the test set, the final performance metrics for
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 ```text
 early_dog_illness_detection_system/
 ├── backend/              # Flask API (Model Inference, Routes)
@@ -59,7 +59,7 @@ early_dog_illness_detection_system/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Backend Setup
 Navigate to the backend directory, initialize a virtual environment, and run the Flask API.
@@ -81,7 +81,7 @@ npm run dev
 
 ---
 
-## 💾 Large Files Excluded
+##  Large Files Excluded
 
 **Model weights (87 MB):** The actual neural network weights are not included directly in source control due to file size limits.
 * **File:** `backend/model/model_weights.json` (and associated `.h5` / `.keras` weights).
@@ -89,7 +89,7 @@ npm run dev
 
 ---
 
-## 💻 Tech Stack
+##  Tech Stack
 
 * **Backend:** Flask, TensorFlow/Keras, OpenCV, Python
 * **Frontend:** React, Vite, Tailwind CSS, JavaScript
@@ -97,10 +97,10 @@ npm run dev
 
 ---
 
-## 📬 Contact & Author Info
+##  Contact & Author Info
 
 **Herath Mudiyanselage Nethmini (H.M. Senuri Kaweesha Nethmini)**  
-*Student ID:* 20221487 / W1956416  
+*Student ID:* 20221487 | W1956416  
 *Institution:* Informatics Institute of Technology (IIT), University of Westminster, UK  
 *Supervisor:* Mr. Obhasha Priyankara  
-*Academic Year:* 2024/2025
+*Academic Year:* 2025/2026
