@@ -1,51 +1,68 @@
-git config user.email# TrustPaw AI - Early Dog Illness Detection System
+<div align="center">
+  <h1>🐾 TrustPaw AI</h1>
+  <p><strong>Early Dog Illness Detection System</strong></p>
+  <p>
+    <a href="https://github.com/senurikaweesha/early_dog_illness_detection_system">
+      <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=flat-square&logo=github" alt="GitHub Repo" />
+    </a>
+  </p>
+</div>
 
-**Author:** Herath Mudiyanselage Nethmini (H.M. Senuri Kaweesha Nethmini)  
-**Student ID:** 20221487 / W1956416  
-**Institution:** Informatics Institute of Technology (IIT), University of Westminster, UK  
-**Supervisor:** Mr. Obhasha Priyankara  
-**Academic Year:** 2024/2025
-
----
-
-## Project Overview
-
-An AI-powered web application that detects early signs of illness in dogs through behavioral video analysis using CNN+LSTM deep learning.
-
-### Key Features
-- Binary classification: Normal vs. Abnormal behavior
-- CNN+LSTM hybrid architecture with MobileNetV2 backbone
-- 91.67% validation accuracy, 100% precision, 83.33% recall
-- React + Flask full-stack application
-- Explainable AI (XAI) for predictions
-- GDPR-compliant video deletion
+<!-- 
+Note regarding the previous README file:
+The initial version of this README included earlier preliminary metrics (91.67% validation accuracy). This version has been fully updated to reflect the formalized testing metrics obtained after Stratified K-Fold cross-validation and rigorous evaluation on the testing set. The formatting has also been enhanced for a better presentation. 
+-->
 
 ---
 
-## Performance Metrics
+## 📋 Project Overview
 
-| Metric | Value |
+An AI-powered web application that detects early signs of illness in dogs through behavioral video analysis using a CNN+LSTM deep learning architecture.
+
+### 🌟 Key Features
+- **Binary Classification:** Classifies dog behavior as *Normal* or *Abnormal*.
+- **CNN+LSTM Hybrid Architecture:** Utilizes a `MobileNetV2` backbone for spatial feature extraction combined with an LSTM network for temporal sequence modeling.
+- **Explainable AI (XAI):** Transparent insights into the model's predictions (e.g., Grad-CAM like visualizations or probability analysis).
+- **Privacy-First:** GDPR-compliant handling of data, ensuring automatic video deletion after analysis.
+- **Full-stack System:** Complete integration of a reliable Flask API with an interactive React frontend.
+
+---
+
+## 📊 Performance Metrics
+
+Following rigorous evaluation on the test set, the final performance metrics for the model are:
+
+| Metric | Score |
 |--------|-------|
-| Validation Accuracy | 91.67% |
-| Precision | 100% |
-| Recall | 83.33% |
-| Threshold | 0.3 |
+| **Accuracy** | 87.50% |
+| **Precision** | 100.0% |
+| **Recall / Sensitivity** | 75.00% |
+| **Specificity** | 100.0% |
+| **F1-Score** | 85.71% |
+| **ROC AUC** | 95.14% |
+
+**Test Set Confusion Matrix:**
+* True Positives: 9
+* True Negatives: 12
+* False Positives: 0
+* False Negatives: 3
 
 ---
 
-## Project Structure
-```
+## 📂 Project Structure
+```text
 early_dog_illness_detection_system/
-├── backend/              # Flask API
-├── frontend/             # React UI
-└── model_training/       # Training notebooks
+├── backend/              # Flask API (Model Inference, Routes)
+├── frontend/             # React UI (Vite, Tailwind CSS, Dashboard)
+└── model_training/       # Training Notebooks and Test Results
 ```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
-### Backend
+### 1. Backend Setup
+Navigate to the backend directory, initialize a virtual environment, and run the Flask API.
 ```bash
 cd backend
 python -m venv venv
@@ -54,7 +71,8 @@ pip install -r requirements.txt
 python app.py
 ```
 
-### Frontend
+### 2. Frontend Setup
+Navigate to the frontend directory, install dependencies, and start the Vite development server.
 ```bash
 cd frontend
 npm install
@@ -63,22 +81,26 @@ npm run dev
 
 ---
 
-## Large Files Excluded
+## 💾 Large Files Excluded
 
-**Model weights (87 MB):** `backend/model/model_weights.json`  
-Download: https://drive.google.com/drive/folders/1svjW3yBRTfU-dHjbGg3QQJlCrr39e2tu?usp=sharing
-
----
-
-## Tech Stack
-
-**Backend:** Flask, TensorFlow, OpenCV  
-**Frontend:** React, Vite, Tailwind CSS  
-**Database:** Firebase Firestore
+**Model weights (87 MB):** The actual neural network weights are not included directly in source control due to file size limits.
+* **File:** `backend/model/model_weights.json` (and associated `.h5` / `.keras` weights).
+* **Download Link:** [Google Drive - Model Weights Folder](https://drive.google.com/drive/folders/1svjW3yBRTfU-dHjbGg3QQJlCrr39e2tu?usp=sharing)
 
 ---
 
-## Contact
+## 💻 Tech Stack
 
-Herath Mudiyanselage Nethmini  
-Informatics Institute of Technology
+* **Backend:** Flask, TensorFlow/Keras, OpenCV, Python
+* **Frontend:** React, Vite, Tailwind CSS, JavaScript
+* **Database:** Firebase Firestore (NoSQL)
+
+---
+
+## 📬 Contact & Author Info
+
+**Herath Mudiyanselage Nethmini (H.M. Senuri Kaweesha Nethmini)**  
+*Student ID:* 20221487 / W1956416  
+*Institution:* Informatics Institute of Technology (IIT), University of Westminster, UK  
+*Supervisor:* Mr. Obhasha Priyankara  
+*Academic Year:* 2024/2025
