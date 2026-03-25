@@ -19,7 +19,8 @@ export const Footer = () => {
                 <Dog className="w-7 h-7 text-blue-400" strokeWidth={1.1} />
               </div>
               <div>
-                <h3 className="text-2xl font-bold tracking-tight">Early Dog Illness Detection System</h3>
+                <h3 className="text-2xl font-bold tracking-tight">PawTrust AI</h3>
+                <h4 className="text-xl text-blue-200 tracking-tight">Early Dog Illness Detection System</h4>
               </div>
             </div>
             
@@ -84,7 +85,7 @@ export const Footer = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-sm">
             <p className="text-slate-400 text-center md:text-left">
-              © {currentYear} Early Dog Illness Detection System. All rights reserved.
+              © {currentYear} TrustPaw AI - Early Dog Illness Detection System. All rights reserved.
             </p>
 
           </div>

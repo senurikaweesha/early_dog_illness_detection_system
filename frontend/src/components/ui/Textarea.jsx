@@ -13,13 +13,13 @@ export const Textarea = memo(({
     <div className={`w-full ${className}`}>
       <label
         htmlFor={textareaId}
-        className="block text-sm font-medium text-gray-700 mb-1"
+        className="block text-sm font-bold text-blue-900 mb-1"
       >
         {label} {required && <span className="text-danger">*</span>}
       </label>
       <textarea
         id={textareaId}
-        className={`input-field min-h-[100px] resize-y ${error ? "border-danger focus:ring-danger/20 focus:border-danger" : ""}`}
+        className={`input-field w-full min-h-[100px] resize-y ${error ? "border-danger focus:ring-danger/20 focus:border-danger" : ""}`}
         required={required}
         {...props}
       />

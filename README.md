@@ -1,4 +1,4 @@
-git config user.email# Early Dog Illness Detection System
+git config user.email# TrustPaw AI - Early Dog Illness Detection System
 
 **Author:** Herath Mudiyanselage Nethmini (H.M. Senuri Kaweesha Nethmini)  
 **Student ID:** 20221487 / W1956416  

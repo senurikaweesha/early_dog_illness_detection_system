@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CameraIcon, SaveIcon, XIcon } from "lucide-react";
+import { Camera, Save, X } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
@@ -241,7 +241,7 @@ export const AddDogPage = () => {
                 />
               ) : (
                 <>
-                  <CameraIcon className="w-8 h-8 mb-2 group-hover:text-secondary transition-colors" />
+                  <Camera className="w-8 h-8 mb-2 group-hover:text-secondary transition-colors" />
                   <span className="text-xs font-medium group-hover:text-secondary transition-colors">
                     Upload Photo
                   </span>
@@ -256,7 +256,7 @@ export const AddDogPage = () => {
               />
             </div>
             <div className="flex-1 text-center sm:text-left pt-2">
-              <h3 className="text-sm font-bold text-gray-700 mb-1">
+              <h3 className="text-sm font-bold text-blue-900 mb-1">
                 Profile Photo (Optional)
               </h3>
               <p className="text-xs text-gray-500 mb-3">
@@ -295,7 +295,7 @@ export const AddDogPage = () => {
             />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-blue-900 mb-2">
               Age <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-4">
@@ -339,7 +339,7 @@ export const AddDogPage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-blue-900 mb-2">
               Gender
             </label>
             <div className="flex gap-6">
@@ -382,7 +382,7 @@ export const AddDogPage = () => {
               type="submit"
               className="flex-1 sm:flex-none"
               loading={isSubmitting}
-              icon={<SaveIcon className="w-4 h-4" />}
+              icon={<Save className="w-4 h-4" />}
             >
               Save Profile
             </Button>
@@ -391,7 +391,7 @@ export const AddDogPage = () => {
               variant="ghost"
               className="flex-1 sm:flex-none border border-gray-200"
               onClick={() => navigate("/dogs")}
-              icon={<XIcon className="w-4 h-4" />}
+              icon={<X className="w-4 h-4" />}
             >
               Cancel
             </Button>

@@ -77,13 +77,3 @@ Button.propTypes = {
   onClick: PropTypes.func,
   type: PropTypes.oneOf(['button', 'submit', 'reset']),
 };
-
-Button.defaultProps = {
-  variant: 'primary',
-  size: 'md',
-  fullWidth: false,
-  loading: false,
-  disabled: false,
-  className: '',
-  type: 'button',
-};

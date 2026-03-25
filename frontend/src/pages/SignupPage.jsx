@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DogIcon, UserIcon, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react";
+import { Dog, User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useAuth } from "../hooks/useAuth";
@@ -63,26 +63,42 @@ export const SignupPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
-    try {
-      await signup({
-        name: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        accountType: formData.accountType,
-      });
-      showToast("Account created successfully!", "success");
-      navigate("/dashboard");
-    } catch (error) {
-      showToast("Failed to create account. Please try again.", "error");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  e.preventDefault();
+  console.log('Form submitted!');
+  console.log('Form data:', formData);
+  
+  if (!validateForm()) {
+    console.log('Validation failed!');
+    console.log('Errors:', errors);
+    return;
+  }
+  
+  setIsSubmitting(true);
+  try {
+    console.log('Calling signup...');
+    await signup({
+      name: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      accountType: formData.accountType,
+    });
+    showToast("Account created successfully!", "success");
+    navigate("/dashboard");
+  } catch (error) {
+    console.error('Signup error:', error);
+    // Show the actual backend error if available (e.g., "Email already exists")
+    const errorMsg = error?.data?.error || error?.message || "Failed to create account. Please try again.";
+    showToast(errorMsg, "error");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-  const pwdStrength = getPasswordStrength(formData.password);
+  // FIXED: Add safety check here
+  const pwdStrength = formData.password && formData.password.length > 0 
+    ? getPasswordStrength(formData.password) 
+    : 'weak';
+
   const strengthColors = {
     weak: "bg-danger",
     medium: "bg-warning",
@@ -92,25 +108,17 @@ export const SignupPage = () => {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-surface-muted">
       <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-gray-100"
       >
         <div className="text-center">
           <div className="mx-auto w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
-            <DogIcon className="w-8 h-8 text-secondary" />
+            <Dog className="w-8 h-8 text-secondary" strokeWidth={1.5}/>
           </div>
-          <h2 className="text-3xl font-extrabold text-primary">
-            Create Account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Join with us to monitor your dog's health
+          <h3 className="text-3xl font-extrabold text-primary">Join TrustPaw AI!</h3>
+          <p className="mt-4 text-base text-gray-600">
+            Sign up to monitor your dog’s health and get AI-powered insights
           </p>
         </div>
 
@@ -125,7 +133,7 @@ export const SignupPage = () => {
               value={formData.fullName}
               onChange={handleChange}
               error={errors.fullName}
-              icon={<UserIcon className="w-5 h-5" />}
+              icon={<User className="w-5 h-5" />}
             />
 
             <Input
@@ -137,7 +145,7 @@ export const SignupPage = () => {
               value={formData.email}
               onChange={handleChange}
               error={errors.email}
-              icon={<MailIcon className="w-5 h-5" />}
+              icon={<Mail className="w-5 h-5" />}
               className="w-full"
             />
 
@@ -152,13 +160,14 @@ export const SignupPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   error={errors.password}
-                  icon={<LockIcon className="w-5 h-5" />}
+                  icon={<Lock className="w-5 h-5" />}
                 />
                 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 transition-colors"
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -168,7 +177,8 @@ export const SignupPage = () => {
                 </button>
               </div>
 
-              {formData.password && (
+              {/* FIXED: Add length check before showing strength indicator */}
+              {formData.password && formData.password.length > 0 && (
                 <div className="mt-2 flex items-center gap-2">
                   <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
@@ -200,13 +210,14 @@ export const SignupPage = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 error={errors.confirmPassword}
-                icon={<LockIcon className="w-5 h-5" />}
+                icon={<Lock className="w-5 h-5" />}
               />
               
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700 transition-colors"
+                tabIndex={-1}
               >
                 {showConfirmPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -273,7 +284,7 @@ export const SignupPage = () => {
             </div>
           </div>
 
-          <Button type="submit" fullWidth loading={isSubmitting}>
+          <Button type="submit" fullWidth loading={isSubmitting} onClick={() => console.log('Button clicked!')}>
             Create Account
           </Button>
         </form>

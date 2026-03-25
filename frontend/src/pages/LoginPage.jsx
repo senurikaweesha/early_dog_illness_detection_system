@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { DogIcon, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react";
+import { Dog, MailIcon, LockIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useAuth } from "../hooks/useAuth";
@@ -54,11 +54,11 @@ export const LoginPage = () => {
       >
         <div className="text-center">
           <div className="mx-auto w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
-            <DogIcon className="w-8 h-8 text-secondary" />
+            <Dog className="w-8 h-8 text-secondary" strokeWidth={1.5}/>
           </div>
-          <h2 className="text-3xl font-extrabold text-primary">Welcome Back</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Log in to monitor your dog's health
+          <h2 className="text-3xl font-extrabold text-primary">Welcome Back!</h2>
+          <p className="mt-4 text-base text-gray-600">
+            Log in to track your dog's health with TrustPaw AI
           </p>
         </div>
 

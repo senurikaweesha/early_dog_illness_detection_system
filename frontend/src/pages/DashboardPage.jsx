@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  DogIcon,
-  VideoIcon,
-  AlertTriangleIcon,
-  PlusIcon,
-  UploadCloudIcon,
+  Dog,
+  Video,
+  AlertTriangle,
+  Plus,
+  UploadCloud,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "../components/ui/Button";
@@ -59,25 +59,25 @@ export const DashboardPage = () => {
     {
       title: "Total Dogs",
       value: `${stats.totalDogs} Dog${stats.totalDogs === 1 ? '' : 's'} Registered`,
-      icon: <DogIcon className="w-8 h-8 text-secondary" />,
+      icon: <Dog className="w-8 h-8 text-secondary" strokeWidth={1.5} />,
       bg: "bg-secondary/10",
     },
     {
       title: "Total Analyses",
       value: `${stats.totalAnalyses} Videos Analyzed`,
-      icon: <VideoIcon className="w-8 h-8 text-accent-dark" />,
+      icon: <Video className="w-8 h-8 text-accent-dark" strokeWidth={1.5}/>,
       bg: "bg-accent/20",
     },
     {
       title: "Recent Alerts",
       value: `${stats.recentAlerts} High Urgency Alert${stats.recentAlerts !== 1 ? "s" : ""}`,
       icon: (
-        <AlertTriangleIcon
-          className={`w-8 h-8 ${stats.recentAlerts > 0 ? "text-danger" : "text-success"}`}
+        <AlertTriangle 
+          strokeWidth={1.5} 
+          className="w-8 h-8 text-danger"
         />
       ),
-
-      bg: stats.recentAlerts > 0 ? "bg-danger/10" : "bg-success/10",
+      bg: "bg-danger/10",
     },
   ];
 
@@ -85,7 +85,7 @@ export const DashboardPage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Welcome Section */}
       <PageHeader
-        heading={`Welcome back, ${user?.name}!`}
+        heading={`Welcome Back, ${user?.name}`}
         description="Manage your dogs and monitor their health"
       />
 
@@ -122,7 +122,7 @@ export const DashboardPage = () => {
             fullWidth
             size="md"
             className="h-20 text-lg font-bold shadow-md hover:shadow-lg transition-all"
-            icon={<PlusIcon className="w-5 h-5" />}
+            icon={<Plus className="w-5 h-5" />}
             onClick={() => navigate("/add-dog")}
           >
             Add New Dog Profile
@@ -146,7 +146,7 @@ export const DashboardPage = () => {
             fullWidth
             size="md"
             className="h-20 text-lg font-bold shadow-md hover:shadow-lg transition-all border-2 border-secondary"
-            icon={<UploadCloudIcon className="w-5 h-5" />}
+            icon={<UploadCloud className="w-5 h-5" />}
             onClick={() => navigate("/analyze")}
           >
             Upload Video for Analysis
@@ -201,7 +201,7 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <EmptyState
-            icon={<VideoIcon className="w-12 h-12" />}
+            icon={<Video className="w-12 h-12" strokeWidth={1.5}/>}
             heading="No analyses yet"
             message="Upload your first video to get started"
             actionLabel="Analyze Video Now"

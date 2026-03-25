@@ -103,28 +103,51 @@ export const analyzeVideo = async (videoFile, dogId) => {
 // ============================================
 
 export const getHistory = async () => {
-  const response = await api.get(API_ENDPOINTS.HISTORY);
-
   const currentUserObj = localStorage.getItem("currentUser");
   const currentUser = currentUserObj ? JSON.parse(currentUserObj) : null;
-  const isVet = currentUser?.accountType === "vet";
-
-  const ownershipMapStr = localStorage.getItem("dogOwnershipMap");
-  const ownershipMap = ownershipMapStr ? JSON.parse(ownershipMapStr) : {};
-
+  
+  if (!currentUser) {
+    console.log("No user logged in");
+    return [];
+  }
+  
+  console.log("Fetching history for user:", currentUser.id, currentUser.accountType);
+  
+  // Get all history from backend
+  const historyResponse = await api.get(API_ENDPOINTS.HISTORY);
+  
+  // Get vet feedbacks
   const feedbacksStr = localStorage.getItem("vetFeedbacks");
   const vetFeedbacks = feedbacksStr ? JSON.parse(feedbacksStr) : {};
-
-  // Attach feedback and filter
-  let result = response.data.map(item => ({
+  
+  // Attach feedback to each item
+  let result = historyResponse.data.map(item => ({
     ...item,
     vetFeedback: vetFeedbacks[item.id] || null
   }));
-
-  if (!isVet && currentUser) {
-    result = result.filter(item => ownershipMap[item.dogId] === currentUser.id);
+  
+  console.log(`Total predictions in system: ${result.length}`);
+  
+  // Filter for dog owners only (vets see all)
+  if (currentUser.accountType === "owner") {
+    // Get user's dogs
+    const dogsResponse = await api.get(`${API_ENDPOINTS.DOGS}?userId=${currentUser.id}`);
+    const userDogIds = dogsResponse.data.map(dog => dog.id);
+    
+    console.log(`User owns ${userDogIds.length} dogs:`, userDogIds);
+    
+    // Filter predictions to only show user's dogs
+    result = result.filter(item => {
+      const belongs = userDogIds.includes(item.dogId);
+      if (!belongs) {
+        console.log(`Filtering out prediction for dogId: ${item.dogId} (not owned by user)`);
+      }
+      return belongs;
+    });
+    
+    console.log(`Filtered to ${result.length} predictions for user's dogs`);
   }
-
+  
   return result;
 };
 
@@ -153,37 +176,21 @@ export const deleteHistory = async (id) => {
 // ============================================
 
 export const getDogs = async () => {
-  const response = await api.get(API_ENDPOINTS.DOGS);
-
-  // DEBUG: Log raw backend response
-  console.log("RAW BACKEND RESPONSE:", response.data);
-
-  // MOCK: Filter dogs by current user
+  // Get current user
   const currentUserObj = localStorage.getItem("currentUser");
-  if (!currentUserObj) return [];
-  const currentUser = JSON.parse(currentUserObj);
-
-  // Vets can see all dogs (for cases)
-  if (currentUser.accountType === "vet") return response.data;
-
-  // Retrieve ownership map
-  const ownershipMapStr = localStorage.getItem("dogOwnershipMap");
-  let ownershipMap = ownershipMapStr ? JSON.parse(ownershipMapStr) : {};
-
-  // Seed default backend dogs to demo-owner-id if map is empty
-  if (Object.keys(ownershipMap).length === 0) {
-    response.data.forEach(dog => {
-      ownershipMap[dog.id] = "demo-owner-id";
-    });
-    localStorage.setItem("dogOwnershipMap", JSON.stringify(ownershipMap));
+  if (!currentUserObj) {
+    console.log("No user logged in");
+    return [];
   }
-
-  const filtered = response.data.filter(dog => ownershipMap[dog.id] === currentUser.id);
   
-  // DEBUG: Log filtered result
-  console.log("FILTERED DOGS:", filtered);
+  const currentUser = JSON.parse(currentUserObj);
   
-  return filtered;
+  // Backend handles filtering by userId
+  const response = await api.get(`${API_ENDPOINTS.DOGS}?userId=${currentUser.id}`);
+  
+  console.log(`Fetched ${response.data.length} dogs for user ${currentUser.id}`);
+  
+  return response.data;
 };
 
 export const getDogById = async (id) => {
@@ -194,25 +201,23 @@ export const getDogById = async (id) => {
 };
 
 export const addDog = async (dogData) => {
-  // DEBUG: Log what we're sending
-  console.log("SENDING DOG DATA:", dogData);
-  
-  const response = await api.post(API_ENDPOINTS.DOGS, dogData);
-  
-  // DEBUG: Log what backend returned
-  console.log("BACKEND RETURNED:", response.data);
-
-  // MOCK: Save ownership
+  // Get current user
   const currentUserObj = localStorage.getItem("currentUser");
-  if (currentUserObj) {
-    const currentUser = JSON.parse(currentUserObj);
-    const newDogId = response.data.id;
-    const ownershipMapStr = localStorage.getItem("dogOwnershipMap");
-    const ownershipMap = ownershipMapStr ? JSON.parse(ownershipMapStr) : {};
-    ownershipMap[newDogId] = currentUser.id;
-    localStorage.setItem("dogOwnershipMap", JSON.stringify(ownershipMap));
-  }
-
+  const currentUser = currentUserObj ? JSON.parse(currentUserObj) : null;
+  const userId = currentUser?.id || 'unknown';
+  
+  // Add userId to dog data
+  const dogDataWithUser = {
+    ...dogData,
+    userId: userId
+  };
+  
+  console.log("Adding dog:", dogDataWithUser);
+  
+  const response = await api.post(API_ENDPOINTS.DOGS, dogDataWithUser);
+  
+  console.log("Dog added:", response.data);
+  
   return response.data;
 };
 
@@ -266,14 +271,16 @@ export const getVetCases = async () => {
       return {
         id: item.id,
         dogName: item.dogName || "Unknown Patient",
-        ownerName: "User (Anonymous)",
+        ownerName: item.ownerName || "User (Anonymous)",
+        dogPhoto: item.dogPhoto || null,
         uploadDate: item.date,
         classification: item.classification === "Normal" ? "Normal" : "Abnormal",
         confidence: item.confidence,
         urgency: item.urgency === "High" ? "High" : item.urgency === "Medium" ? "Medium" : "Low",
         status: fb ? "Reviewed" : "Pending Review",
         xaiInsights: item.xaiInsights || {},
-        vetFeedback: fb || null
+        vetFeedback: fb || null,
+        dogNotes: item.dogNotes || ""
       };
     });
   } catch (error) {

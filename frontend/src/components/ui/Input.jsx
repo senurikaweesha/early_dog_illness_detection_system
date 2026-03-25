@@ -17,7 +17,7 @@ export const Input = memo(forwardRef(({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block text-sm font-bold text-blue-900 mb-1"
         >
           {label} {required && <span className="text-danger ml-1">*</span>}
         </label>

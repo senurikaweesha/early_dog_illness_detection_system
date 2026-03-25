@@ -1,5 +1,8 @@
 import React, { useEffect, useState, createContext } from "react";
+import { login as loginAPI, register as registerAPI } from '../services/api';
+
 export const AuthContext = createContext(undefined);
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // Try to restore session on mount
@@ -17,72 +20,59 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     setLoading(true);
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email && password) {
-          // Check if we have this user saved
-          const usersRaw = localStorage.getItem("mockUsers");
-          const users = usersRaw ? JSON.parse(usersRaw) : [];
-          const existingUser = users.find(u => u.email === email);
-
-          let loggedInUser;
-          if (existingUser) {
-            loggedInUser = existingUser;
-          } else {
-            // Fallback for demo logins
-            const accountType = email.includes("vet") ? "vet" : "owner";
-            const isVet = accountType === "vet";
-            loggedInUser = {
-              id: isVet ? "demo-vet-id" : "demo-owner-id",
-              name: isVet ? "Dr. Veterinarian" : (email ? email.split('@')[0] : "User"),
-              email,
-              accountType,
-            };
-          }
-
-          setUser(loggedInUser);
-          localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
-          localStorage.setItem("authToken", "mock-jwt-token-123");
-          resolve();
-        } else {
-          reject(new Error("Invalid credentials"));
-        }
-        setLoading(false);
-      }, 800);
-    });
+    try {
+      // Call REAL backend API
+      const response = await loginAPI(email, password);
+      
+      const loggedInUser = response.user;
+      
+      console.log("Backend login successful:", loggedInUser);
+      
+      // Store real user data from backend
+      setUser(loggedInUser);
+      localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
+      localStorage.setItem("authToken", response.token || "mock-jwt-token-123");
+      
+      setLoading(false);
+      return loggedInUser;
+    } catch (error) {
+      setLoading(false);
+      console.error("Login failed:", error);
+      throw new Error("Invalid credentials");
+    }
   };
 
   const signup = async (data) => {
     setLoading(true);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newUser = {
-          id: Math.random().toString(36).substr(2, 9),
-          name: data.name,
-          email: data.email,
-          accountType: data.accountType,
-        };
-
-        // Save to mock database
-        const usersRaw = localStorage.getItem("mockUsers");
-        const users = usersRaw ? JSON.parse(usersRaw) : [];
-        users.push(newUser);
-        localStorage.setItem("mockUsers", JSON.stringify(users));
-
-        // Log them in
-        setUser(newUser);
-        localStorage.setItem("currentUser", JSON.stringify(newUser));
-        localStorage.setItem("authToken", "mock-jwt-token-123");
-        resolve();
-        setLoading(false);
-      }, 800);
-    });
+    try {
+      // Call REAL backend API
+      const response = await registerAPI(data);
+      
+      const newUser = response.user;
+      
+      console.log("Registration successful:", newUser);
+      
+      // Store real user data from backend
+      setUser(newUser);
+      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      localStorage.setItem("authToken", response.token || "mock-jwt-token-123");
+      
+      setLoading(false);
+      return newUser;
+    } catch (error) {
+      setLoading(false);
+      console.error("Registration failed:", error);
+      throw error;
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("currentUser");
     localStorage.removeItem("authToken");
+    // Clean up old mock data
+    localStorage.removeItem("mockUsers");
+    localStorage.removeItem("dogOwnershipMap");
   };
 
   return (

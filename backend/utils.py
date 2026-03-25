@@ -12,7 +12,7 @@ def extract_frames(video_path, num_frames=30, target_size=(224, 224)):
     """
     Extract exactly num_frames from video uniformly
     """
-    print(f"Opening video: {video_path}")
+    print(f"\nOpening video: {video_path}")
     
     # Open video
     cap = cv2.VideoCapture(video_path)
@@ -42,7 +42,7 @@ def extract_frames(video_path, num_frames=30, target_size=(224, 224)):
         ret, frame = cap.read()
         
         if not ret:
-            print(f"Warning: Could not read frame {idx}")
+            print(f"\nWarning: Could not read frame {idx}")
             continue
         
         # Convert BGR to RGB
@@ -55,7 +55,7 @@ def extract_frames(video_path, num_frames=30, target_size=(224, 224)):
     
     cap.release()
     
-    print(f"Extracted {len(frames)} frames")
+    print(f"\nExtracted {len(frames)} frames")
     
     # Pad with last frame if needed
     while len(frames) < num_frames:
@@ -65,7 +65,7 @@ def extract_frames(video_path, num_frames=30, target_size=(224, 224)):
     # Convert to numpy array
     frames_array = np.array(frames[:num_frames])  # Take exactly num_frames
     
-    print(f"   Final shape: {frames_array.shape}")
+    print(f"Shape: {frames_array.shape}")
     
     return frames_array
 
@@ -80,7 +80,6 @@ def preprocess_frames(frames):
     Returns:
         Preprocessed frames normalized to [0, 1]
     """
-    print(f"Preprocessing frames...")
     
     # Convert to float32
     frames = frames.astype('float32')
@@ -128,7 +127,9 @@ def cleanup_file(filepath):
     try:
         if os.path.exists(filepath):
             os.remove(filepath)
+            print("\n" + "="*60)
             print(f"Cleaned up: {filepath}")
+            print("="*60)
     except Exception as e:
         print(f"Could not delete {filepath}: {e}")
 

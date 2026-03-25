@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  Dog,
   SearchIcon,
   FolderOpenIcon,
   CalendarIcon,
   ActivityIcon,
   StethoscopeIcon,
   CheckCircle2Icon,
+  EditIcon,
 } from "lucide-react";
 
 import { Input } from "../components/ui/Input";
@@ -26,6 +28,7 @@ import { useToast } from "../hooks/useToast";
 import { useAuth } from "../hooks/useAuth";
 import { useFetchData } from "../hooks/useFetchData";
 import { formatDate, formatConfidence } from "../utils/helpers";
+
 export const HistoryPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,6 +37,20 @@ export const HistoryPage = () => {
   const { showToast } = useToast();
 
   const { data: history, loading, error, refetch } = useFetchData(getHistory);
+
+// DEBUG: Log history data
+useEffect(() => {
+  console.log("=== HISTORY PAGE DATA ===");
+  console.log("Type:", typeof history);
+  console.log("Is Array:", Array.isArray(history));
+  console.log("Length:", history?.length);
+  console.log("Data:", history);
+  
+  if (history) {
+    console.log("HistoryPage received:", history.length, "predictions");
+    console.log("Dog IDs in history:", [...new Set(history.map(h => h.dogId))]);
+  }
+}, [history]);
 
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [dogs, setDogs] = useState([]);
@@ -56,6 +73,7 @@ export const HistoryPage = () => {
     recommendations: "",
   });
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [isEditingFeedback, setIsEditingFeedback] = useState(false);
 
   useEffect(() => {
     const fetchDogsOptions = async () => {
@@ -88,6 +106,7 @@ export const HistoryPage = () => {
     };
     fetchDogsOptions();
   }, [history, initialPredictionId]);
+
   useEffect(() => {
     if (!history) return;
     let result = history;
@@ -108,11 +127,11 @@ export const HistoryPage = () => {
     setFilteredHistory(result);
     setCurrentPage(1);
   }, [history, selectedDog, selectedResult, searchQuery]);
+
   const handleDelete = (id) => {
-    // Because HistoryPage mocks delete mostly, we can just refetch
-    // This assumes deleteDog API was called in the PredictionCard
     refetch();
   };
+
   const openDetails = (id) => {
     const pred = history.find((p) => p.id === id);
     if (pred) {
@@ -122,29 +141,46 @@ export const HistoryPage = () => {
         comments: "",
         recommendations: "",
       });
+      setIsEditingFeedback(false);
       setIsModalOpen(true);
     }
+  };
+
+  const handleEditFeedback = () => {
+    if (selectedPrediction.vetFeedback) {
+      setFeedback({
+        status: selectedPrediction.vetFeedback.status,
+        comments: selectedPrediction.vetFeedback.comments,
+        recommendations: selectedPrediction.vetFeedback.recommendations,
+      });
+      setIsEditingFeedback(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setFeedback({
+      status: "Confirmed",
+      comments: "",
+      recommendations: "",
+    });
+    setIsEditingFeedback(false);
   };
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (!selectedPrediction) return;
-    // Optional: if (!feedback.comments.trim() || !feedback.recommendations.trim()) {
-    //   showToast("Please provide both comments and recommendations.", "warning");
-    //   return;
-    // }
 
     setIsSubmittingFeedback(true);
     try {
       const res = await submitVetFeedback(selectedPrediction.id, feedback);
 
-      // Trigger refetch so it gets the newly saved feedback from localStorage
+      // Trigger refetch
       refetch();
 
-      // Update selected prediction locally so the modal doesn't flash
-      setSelectedPrediction(prev => ({ ...prev, vetFeedback: res.feedback }));
+      // Update selected prediction locally
       setSelectedPrediction(prev => ({ ...prev, vetFeedback: res.feedback }));
 
+      setIsEditingFeedback(false);
       showToast("Feedback submitted successfully", "success");
     } catch (error) {
       showToast("Failed to submit feedback", "error");
@@ -152,6 +188,7 @@ export const HistoryPage = () => {
       setIsSubmittingFeedback(false);
     }
   };
+
   if (loading || !history) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
@@ -181,13 +218,14 @@ export const HistoryPage = () => {
       </div>
     );
   }
-  // Pagination logic
+
   const totalItems = filteredHistory.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const currentItems = filteredHistory.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <PageHeader
@@ -197,17 +235,9 @@ export const HistoryPage = () => {
 
       {/* Filters */}
       <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          delay: 0.1,
-        }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
         className="card mb-8 p-4"
       >
         <div className="flex flex-col md:flex-row gap-4 items-end">
@@ -223,18 +253,9 @@ export const HistoryPage = () => {
             <Select
               label="Filter by Result"
               options={[
-                {
-                  value: "",
-                  label: "All Results",
-                },
-                {
-                  value: "Normal",
-                  label: "Normal",
-                },
-                {
-                  value: "Abnormal",
-                  label: "Abnormal",
-                },
+                { value: "", label: "All Results" },
+                { value: "Normal", label: "Normal" },
+                { value: "Abnormal", label: "Abnormal" },
               ]}
               value={selectedResult}
               onChange={(e) => setSelectedResult(e.target.value)}
@@ -256,15 +277,9 @@ export const HistoryPage = () => {
       {filteredHistory.length > 0 ? (
         <>
           <motion.div
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            transition={{
-              delay: 0.2,
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             <AnimatePresence>
@@ -272,22 +287,10 @@ export const HistoryPage = () => {
                 <motion.div
                   key={prediction.id}
                   layout
-                  initial={{
-                    opacity: 0,
-                    scale: 0.9,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.9,
-                  }}
-                  transition={{
-                    duration: 0.2,
-                    delay: index * 0.05,
-                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2, delay: index * 0.05 }}
                 >
                   <PredictionCard
                     prediction={prediction}
@@ -309,7 +312,7 @@ export const HistoryPage = () => {
         </>
       ) : (
         <EmptyState
-          icon={<FolderOpenIcon className="w-16 h-16 text-gray-300" />}
+          icon={<FolderOpenIcon className="w-12 h-12 text-blue-900" strokeWidth={1.5}/>}
           heading="No history found"
           message="Try adjusting your filters or upload a new video."
           actionLabel="Analyze Video Now"
@@ -320,7 +323,10 @@ export const HistoryPage = () => {
       {/* Details Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setIsEditingFeedback(false);
+        }}
         title="Analysis Details"
         size="lg"
       >
@@ -328,7 +334,7 @@ export const HistoryPage = () => {
           <div className="space-y-6">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center overflow-hidden">
                   {selectedPrediction.dogPhoto ? (
                     <img
                       src={selectedPrediction.dogPhoto}
@@ -336,17 +342,15 @@ export const HistoryPage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-2xl font-bold text-gray-500">
-                      {selectedPrediction.dogName.charAt(0)}
-                    </span>
+                    <Dog className="w-8 h-8 text-blue-900" strokeWidth={1.5} />
                   )}
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-primary">
+                  <h3 className="text-xl font-bold text-primary">
                     {selectedPrediction.dogName}
                   </h3>
-                  <p className="text-gray-500 flex items-center gap-2">
-                    <CalendarIcon className="w-4 h-4" />{" "}
+                  <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                    <CalendarIcon className="w-4 h-4" />
                     {formatDate(selectedPrediction.date)}
                   </p>
                 </div>
@@ -370,34 +374,46 @@ export const HistoryPage = () => {
 
             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
               <div>
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">
+                <p className="text-sm text-gray-400 font-bold">
                   Confidence Score
                 </p>
-                <p className="text-xl font-bold text-primary">
+                <p className="text-xl text-blue-900 font-bold">
                   {formatConfidence(selectedPrediction.confidence)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">
+                <p className="text-sm text-gray-400 font-bold">
                   Video File
                 </p>
-                <p className="text-primary font-medium truncate">
+                <p className="text-sm text-gray-900 font">
                   {selectedPrediction.filename}
                 </p>
               </div>
             </div>
 
-            <div className="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
+            {/* Additional Notes */}
+            {selectedPrediction.dogNotes?.trim() ? (
+              <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
+                <p className="text-base font-bold text-orange-400 tracking-wide mb-1">
+                  Additional Notes
+                </p>
+                <p className="text-sm text-gray-800">
+                  {selectedPrediction.dogNotes}
+                </p>
+              </div>
+            ) : null}
+
+            <div className="bg-blue-50/50 p-5 rounded-xl border border-blue-100 mt-6">
               <h4 className="font-bold text-secondary flex items-center gap-2 mb-3">
                 <ActivityIcon className="w-5 h-5" /> Recommendation
               </h4>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed">
                 {selectedPrediction.recommendation}
               </p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-xl">
-              <h4 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">
+              <h4 className="font-bold text-gray-700 mb-3 text-base">
                 Technical Details
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
@@ -433,11 +449,12 @@ export const HistoryPage = () => {
                   <StethoscopeIcon className="w-5 h-5 text-secondary" /> Expert Veterinarian Review
                 </h4>
 
-                {selectedPrediction.vetFeedback ? (
+                {selectedPrediction.vetFeedback && !isEditingFeedback ? (
+                  /* Show existing feedback (READ ONLY for non-vets, EDITABLE for vets) */
                   <div className="space-y-4">
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                       <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Status</p>
-                      <p className="font-medium text-gray-900">{selectedPrediction.vetFeedback.status}</p>
+                      <p className="text-sm text-gray-900">{selectedPrediction.vetFeedback.status}</p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -453,11 +470,28 @@ export const HistoryPage = () => {
                     <p className="text-xs text-gray-500 text-right mt-2">
                       Submitted by: {selectedPrediction.vetFeedback.vetName} on {formatDate(selectedPrediction.vetFeedback.date)}
                     </p>
+
+                    {/* EDIT BUTTON FOR VETS */}
+                    {user?.accountType === "vet" && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        fullWidth
+                        onClick={handleEditFeedback}
+                        icon={<EditIcon className="w-4 h-4" />}
+                        className="border border-gray-200 mt-4"
+                      >
+                        Edit Feedback
+                      </Button>
+                    )}
                   </div>
                 ) : user?.accountType === "vet" ? (
+                  /* Show form ONLY for vets when no feedback exists OR when editing */
                   <form onSubmit={handleFeedbackSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Validation Status <span className="text-danger">*</span></label>
+                      <label className="block text-sm font-bold text-blue-900 mb-2">
+                        Validation Status <span className="text-danger">*</span>
+                      </label>
                       <select
                         className="w-full rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:ring-secondary text-sm"
                         value={feedback.status}
@@ -485,9 +519,26 @@ export const HistoryPage = () => {
                       rows={2}
                     />
 
-                    <Button type="submit" fullWidth loading={isSubmittingFeedback} icon={<CheckCircle2Icon className="w-5 h-5" />}>
-                      Submit Feedback
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        type="submit"
+                        className="flex-1"
+                        loading={isSubmittingFeedback}
+                        icon={<CheckCircle2Icon className="w-5 h-5" />}
+                      >
+                        {isEditingFeedback ? "Update Feedback" : "Submit Feedback"}
+                      </Button>
+                      {isEditingFeedback && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={handleCancelEdit}
+                          className="border border-gray-200"
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </div>
                   </form>
                 ) : null}
               </div>

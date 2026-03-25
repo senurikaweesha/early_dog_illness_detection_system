@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -6,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # Import your existing modules
-from model_builder import create_production_model
+from model.model_loader import get_model as load_model_instance
 from utils import extract_frames, preprocess_frames, cleanup_file
 from xai_feature_explainer import generate_xai_insights
 
@@ -32,15 +31,14 @@ CORS(app, resources={
 # GLOBAL MODEL INSTANCE
 # ============================================
 
-print("LOADING AI MODEL...")
+MODEL = None
 
-try:
-    # Load your trained model
-    MODEL = create_production_model(weights_path='model/model_weights.json')
-    print("Model loaded successfully!")
-except Exception as e:
-    print(f"Failed to load model: {e}")
-    MODEL = None
+def get_model():
+    """Get the loaded model instance"""
+    global MODEL
+    if MODEL is None:
+        MODEL = load_model_instance()
+    return MODEL
 
 # ============================================
 # IN-MEMORY DATABASE
@@ -92,6 +90,153 @@ def determine_urgency(probability, is_abnormal):
         return "Medium"
     else:
         return "Low"
+    
+def detect_dog_in_video(frames, confidence_threshold=0.3):
+    """
+    Detect if EXACTLY ONE dog is present in the video frames using MobileNet-SSD
+    Returns: (has_dog, detection_info)
+    """
+    import cv2
+    
+    # Load pre-trained MobileNet-SSD model
+    model_path = 'model/detector/mobilenet_iter_73000.caffemodel'
+    config_path = 'model/detector/deploy.prototxt'
+    
+    if not os.path.exists(model_path) or not os.path.exists(config_path):
+        print("Dog detector model not found. Skipping dog detection.")
+        return True, {"note": "Detection skipped - model files missing"}
+    
+    # Load the model
+    net = cv2.dnn.readNetFromCaffe(config_path, model_path)
+    
+    # COCO class labels (MobileNet-SSD classes)
+    CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
+               "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+               "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+               "sofa", "train", "tvmonitor"]
+    
+    DOG_CLASS_ID = 12  # "dog" is class 12
+    CAT_CLASS_ID = 8   # "cat" is class 8
+    PERSON_CLASS_ID = 15  # "person" is class 15
+    
+    print(f"\nDetecting objects in video:")
+    
+    total_dog_detections = 0
+    cat_detections = 0
+    person_detections = 0
+    frames_checked = 0
+    
+    # NEW: Track multiple dogs per frame
+    frames_with_multiple_dogs = 0
+    frames_with_one_dog = 0
+    frames_with_no_dog = 0
+    max_dogs_in_frame = 0
+    
+    # Check every 3rd frame (more thorough detection)
+    for i in range(0, len(frames), 3):
+        frame = frames[i]
+        
+        # Convert from normalized [0,1] back to [0,255] if needed
+        if frame.max() <= 1.0:
+            frame = (frame * 255).astype(np.uint8)
+        
+        # Prepare frame for detection
+        blob = cv2.dnn.blobFromImage(frame, 0.007843, (224, 224), 127.5)
+        net.setInput(blob)
+        detections = net.forward()
+        
+        # Count dogs in THIS frame
+        dogs_in_this_frame = 0
+        
+        # Process detections
+        for j in range(detections.shape[2]):
+            confidence = detections[0, 0, j, 2]
+            
+            if confidence > confidence_threshold:
+                class_id = int(detections[0, 0, j, 1])
+                
+                if class_id == DOG_CLASS_ID:
+                    dogs_in_this_frame += 1
+                    total_dog_detections += 1
+                elif class_id == CAT_CLASS_ID:
+                    cat_detections += 1
+                elif class_id == PERSON_CLASS_ID:
+                    person_detections += 1
+        
+        # Track statistics
+        if dogs_in_this_frame == 0:
+            frames_with_no_dog += 1
+        elif dogs_in_this_frame == 1:
+            frames_with_one_dog += 1
+        else:  # 2 or more dogs
+            frames_with_multiple_dogs += 1
+        
+        max_dogs_in_frame = max(max_dogs_in_frame, dogs_in_this_frame)
+        frames_checked += 1
+    
+    print(f"   Frames checked: {frames_checked}")
+    print(f"   Total dog detections: {total_dog_detections}")
+    print(f"   Frames with 1 dog: {frames_with_one_dog}")
+    print(f"   Frames with multiple dogs: {frames_with_multiple_dogs}")
+    print(f"   Max dogs in single frame: {max_dogs_in_frame}")
+    print(f"   Cat detections: {cat_detections}")
+    print(f"   Person detections: {person_detections}")
+    
+    # Decision logic
+    detection_info = {
+        "total_dog_detections": int(total_dog_detections),
+        "frames_with_one_dog": int(frames_with_one_dog),
+        "frames_with_multiple_dogs": int(frames_with_multiple_dogs),
+        "max_dogs_in_frame": int(max_dogs_in_frame),
+        "cat_detections": int(cat_detections),
+        "person_detections": int(person_detections),
+        "frames_checked": int(frames_checked)
+    }
+    
+    # Calculate minimum required frames with dog
+    min_dog_frames = max(2, frames_checked * 0.3)
+    print(f"   Minimum dog frames needed: {min_dog_frames:.0f}")
+    
+    # No dog detected at all
+    if total_dog_detections == 0:
+        print("\nNo dog detected in video")
+        return False, detection_info
+    
+    # Not enough single-dog frames (need 30% coverage)
+    if frames_with_one_dog < min_dog_frames:
+        print(f"\nInsufficient dog visibility ({frames_with_one_dog}/{min_dog_frames:.0f} frames required)")
+        return False, detection_info
+    
+    # Multiple dogs in MULTIPLE frames
+    # Allow 1-2 frames with detection errors, but reject if clearly multiple dogs
+    if frames_with_multiple_dogs > 2:
+        print(f"\nMultiple dogs detected in {frames_with_multiple_dogs} frames")
+        return False, detection_info
+    
+    # Too many dogs in one frame (3+ dogs clearly multiple)
+    if max_dogs_in_frame >= 3:
+        print(f"{max_dogs_in_frame} dogs detected in a single frame")
+        return False, detection_info
+    
+    # Cat is CLEARLY dominant (not just present)
+    if cat_detections > total_dog_detections:
+        print("\nMore cat detections than dog detections (likely a cat video)")
+        return False, detection_info
+    
+    # Human is CLEARLY dominant
+    if person_detections > total_dog_detections * 1.5:
+        print("\nToo many human detections compared to dog (human is primary subject)")
+        return False, detection_info
+    
+    # Dog must appear with reasonable consistency
+    dog_coverage_ratio = frames_with_one_dog / frames_checked
+    if dog_coverage_ratio < 0.2:  # At least 20% of frames
+        print(f"\nDog appears in too few frames ({dog_coverage_ratio*100:.0f}% coverage, need 20%)")
+        return False, detection_info
+    
+    # All checks passed
+    print(f"\nSingle dog detected ({frames_with_one_dog}/{frames_checked} frames, {dog_coverage_ratio*100:.0f}% coverage)!")
+    return True, detection_info
 
 # ============================================
 # AUTHENTICATION ENDPOINTS
@@ -129,16 +274,19 @@ def register():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    """Login user"""
+    """Login user - returns existing user or creates new one"""
     try:
         data = request.json
         email = data.get('email')
         
+        # Find existing user by email
         user = next((u for u in users_db if u['email'] == email), None)
         
         if not user:
+            # Create new user with proper sequential ID
+            new_id = f"user_{len(users_db) + 1}"
             user = {
-                "id": f"user_{len(users_db) + 1}",
+                "id": new_id,
                 "name": email.split('@')[0],
                 "email": email,
                 "accountType": "owner",
@@ -146,6 +294,15 @@ def login():
             }
             users_db.append(user)
             save_to_file(users_db, USERS_FILE)
+            
+            print(f"\nNEW USER CREATED:")
+            print(f"   ID: {new_id}")
+            print(f"   Email: {email}")
+        else:
+            print(f"\nEXISTING USER LOGGED IN:")
+            print(f"   ID: {user['id']}")
+            print(f"   Email: {email}")
+            print(f"   Name: {user['name']}")
         
         return jsonify({
             "message": "Login successful",
@@ -162,8 +319,22 @@ def login():
 
 @app.route('/api/dogs', methods=['GET'])
 def get_dogs():
-    """Get all dogs"""
-    return jsonify(dogs_db), 200
+    """Get dogs for current user only"""
+    user_id = request.args.get('userId')
+    
+    # No userId = no access (security)
+    if not user_id:
+        print(f"\nGET /api/dogs - No userId provided, returning empty")
+        return jsonify([]), 200
+    
+    # Filter dogs by userId (even vets only see their own if they have any)
+    user_dogs = [dog for dog in dogs_db if dog.get('userId') == user_id]
+    
+    print(f"\nGET /api/dogs - User: {user_id}")
+    print(f"  Total dogs in DB: {len(dogs_db)}")
+    print(f"  User's dogs: {len(user_dogs)}")
+    
+    return jsonify(user_dogs), 200
 
 @app.route('/api/dogs/<dog_id>', methods=['GET'])
 def get_dog(dog_id):
@@ -192,6 +363,7 @@ def add_dog():
             "gender": data.get('gender'),
             "notes": data.get('notes', ''),
             "photo": data.get('photo'),
+            "userId": data.get('userId', 'unknown'), 
             "totalAnalyses": 0,
             "createdAt": datetime.now().isoformat()
         }
@@ -202,6 +374,9 @@ def add_dog():
         return jsonify(new_dog), 201
         
     except Exception as e:
+        print(f"ERROR in add_dog: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/dogs/<dog_id>', methods=['PUT'])
@@ -254,11 +429,19 @@ def get_history():
     """Get prediction history"""
     dog_id = request.args.get('dogId')
     
+    # Inject latest notes from dogs_db
+    enhanced_history = []
+    for h in history_db:
+        h_copy = h.copy()
+        dog = next((d for d in dogs_db if d.get('id') == h.get('dogId')), None)
+        h_copy['dogNotes'] = dog.get('notes', '') if dog else ''
+        enhanced_history.append(h_copy)
+    
     if dog_id:
-        filtered = [h for h in history_db if h['dogId'] == dog_id]
+        filtered = [h for h in enhanced_history if h.get('dogId') == dog_id]
         return jsonify(filtered), 200
     
-    sorted_history = sorted(history_db, key=lambda x: x['date'], reverse=True)
+    sorted_history = sorted(enhanced_history, key=lambda x: x.get('date', ''), reverse=True)
     return jsonify(sorted_history), 200
 
 @app.route('/api/history/<history_id>', methods=['DELETE'])
@@ -282,10 +465,11 @@ def delete_history(history_id):
 @app.route('/api/predict', methods=['POST'])
 def predict():
     """Analyze video using real CNN+LSTM model"""
+
+    model = get_model()
     
-    if MODEL is None:
+    if model is None:
         return jsonify({'error': 'Model not loaded. Please check server logs.'}), 500
-    
     if 'video' not in request.files:
         return jsonify({'error': 'No video file provided'}), 400
     
@@ -314,37 +498,59 @@ def predict():
     file.save(video_path)
     
     try:
-        print(f"🎥 ANALYZING VIDEO: {file.filename}")
+        print("\n" + "-"*80)
+        print(f"Analyzing video: {file.filename}")
         
         # ============================================
-        # STEP 1: EXTRACT FRAMES
+        # EXTRACT FRAMES
         # ============================================
-        print("\nStep 1: Extracting frames...")
+        print("\nExtracting frames...")
         frames = extract_frames(video_path, num_frames=30, target_size=(224, 224))
-        print(f"Extracted {len(frames)} frames")
-        print(f"Shape: {frames.shape}")
         
         # ============================================
-        # STEP 2: PREPROCESS FRAMES
+        # DETECT DOG IN VIDEO
         # ============================================
-        print("\nStep 2: Preprocessing frames...")
+        print("\nDetecting dog in video...")
+        has_dog, detection_info = detect_dog_in_video(frames)
+        
+        if not has_dog:
+            cleanup_file(video_path)
+            
+            # Determine what was detected and provide specific error
+            if detection_info.get('frames_with_multiple_dogs', 0) > 0 or detection_info.get('max_dogs_in_frame', 0) > 1:
+                error_msg = f"Multiple dogs detected in this video ({detection_info.get('max_dogs_in_frame')} dogs in some frames). Our AI model is trained to analyze individual dogs only. Please upload a video showing only one dog."
+            elif detection_info.get('cat_detections', 0) > 0:
+                error_msg = "This video appears to contain a cat, not a dog. Please upload a video of your dog."
+            elif detection_info.get('person_detections', 0) > 0:
+                error_msg = "This video appears to contain a human, not a dog. Please upload a video showing your dog's behavior."
+            else:
+                error_msg = "No dog detected in this video. Please ensure your dog is clearly visible and is the main subject of the video."
+            
+            return jsonify({
+                'error': error_msg,
+                'suggestion': 'Upload a clear video where ONE dog is the primary subject, well-lit, and actively moving.',
+                'detection_details': detection_info
+            }), 400
+        
+        # ============================================
+        # PREPROCESS FRAMES
+        # ============================================
+        print("\nPreprocessing frames...")
         preprocessed_frames = preprocess_frames(frames)
-        print(f"Normalized to [{preprocessed_frames.min():.3f}, {preprocessed_frames.max():.3f}]")
         
-        # Add batch dimension: (1, 30, 224, 224, 3)
         input_data = np.expand_dims(preprocessed_frames, axis=0)
-        print(f"Input shape: {input_data.shape}")
+        print(f"   Input shape: {input_data.shape}")
         
         # ============================================
-        # STEP 3: RUN AI MODEL PREDICTION
+        # RUN AI MODEL PREDICTION
         # ============================================
-        print("\nStep 3: Running CNN+LSTM model...")
+        print("\nRunning CNN+LSTM model...")
         prediction = MODEL.predict(input_data, verbose=0)
         probability = float(prediction[0][0])
-        print(f"Raw probability: {probability:.6f}")
+        print(f"   Raw probability: {probability:.6f}")
         
         # ============================================
-        # STEP 4: APPLY THRESHOLD & CLASSIFY
+        # APPLY THRESHOLD & CLASSIFY
         # ============================================
         threshold = 0.3
         is_abnormal = probability > threshold
@@ -367,9 +573,9 @@ def predict():
         print(f"   Urgency: {urgency}")
         
         # ============================================
-        # STEP 5: GENERATE XAI INSIGHTS
+        # GENERATE XAI INSIGHTS
         # ============================================
-        print("\n🔍 Step 5: Generating XAI insights...")
+        print("\nGenerating XAI insights...")
         
         xai_result = generate_xai_insights(
             frames=preprocessed_frames,
@@ -378,20 +584,39 @@ def predict():
             threshold=threshold
         )
         
-        print(f"Generated {len(xai_result['observations'])} observations")
-        print(f"Generated {len(xai_result['concerns'])} concerns")
-        print(f"Generated {len(xai_result['recommendations'])} recommendations")
+        print(f"   Generated {len(xai_result['observations'])} observations")
+        print(f"   Generated {len(xai_result['concerns'])} concerns")
+        print(f"   Generated {len(xai_result['recommendations'])} recommendations")
         
         # ============================================
-        # STEP 6: CREATE RESULT
+        # CREATE RESULT
         # ============================================
+        
         result_id = f"result_{len(history_db) + 1}"
-        
+
+        # Find the owner information from the dog's userId
+        print(f"\nFINDING OWNER INFO:")
+        print(f"   Dog ID: {dog_id}")
+        print(f"   Dog userId: {dog.get('userId', 'NOT SET')}")
+        print(f"   Total users in DB: {len(users_db)}")
+
+        owner = None
+        if 'userId' in dog and dog['userId'] and dog['userId'] != 'unknown':
+            owner = next((u for u in users_db if u['id'] == dog['userId']), None)
+            print(f"Found owner: {owner['name'] if owner else 'NOT FOUND'}")
+        else:
+            print(f"Dog has no userId set!")
+
+        owner_name = owner['name'] if owner else 'User (Anonymous)'
+
+        print(f"OwnerName: {owner_name}")
+
         result = {
             "id": result_id,
             "dogId": dog_id,
             "dogName": dog['name'],
             "dogPhoto": dog.get('photo'),
+            "ownerName": owner_name,  # THIS IS THE KEY LINE
             "classification": classification,
             "confidence": round(confidence, 2),
             "urgency": urgency,
@@ -406,6 +631,8 @@ def predict():
                 "recommendations": xai_result['recommendations']
             }
         }
+
+        print(f"\nResult created with owner: {result['ownerName']}")
         
         # Save to history
         history_db.append(result)
@@ -416,16 +643,18 @@ def predict():
         save_to_file(dogs_db, DOGS_FILE)
         
         # ============================================
-        # STEP 7: CLEANUP (GDPR)
+        # CLEANUP (GDPR)
         # ============================================
-        print("\n🗑️  Step 7: GDPR compliance - deleting video...")
+        print("\nGDPR compliance - deleting video...")
         cleanup_file(video_path)
         print("Video deleted (metadata retained)")
 
+        print("\n" + "="*80)
         print("ANALYSIS COMPLETE!")
-        print(f"Classification: {classification}")
-        print(f"Confidence: {confidence:.2f}%")
-        print(f"Urgency: {urgency}")
+        print(f"   Classification: {classification}")
+        print(f"   Confidence: {confidence:.2f}%")
+        print(f"   Urgency: {urgency}")
+        print("="*80 + "\n")
         
         return jsonify(result), 200
         
@@ -449,7 +678,7 @@ def health_check():
     """Check if API is running"""
     return jsonify({
         "status": "healthy",
-        "message": "Early Dog Illness Detection API is running",
+        "message": "TrustPaw AI - Early Dog Illness Detection API is running",
         "model_loaded": MODEL is not None,
         "timestamp": datetime.now().isoformat(),
         "stats": {
@@ -476,11 +705,30 @@ def internal_error(error):
 # ============================================
 
 if __name__ == '__main__':
-    print("Early Dog Illness Detection System - Backend API")
-
-    print(f"Starting Flask server...")
-    print(f"API available at: http://localhost:5000")
-    print(f"CORS enabled for: http://localhost:5173")
-    print(f"AI Model: {'Loaded' if MODEL else 'Not Loaded'}")
+    import os
+    import logging
     
-    app.run(debug=True, port=5001, host='0.0.0.0')
+    # Suppress Flask's werkzeug logs
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.WARNING)
+    
+    # Check model status
+    model = get_model()
+    model_status = "Loaded" if model is not None else "Not Loaded"
+    model_params = f"{model.count_params():,} params" if model is not None else "N/A"
+    
+    print("\n" + "="*80)
+    print("TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
+    print("="*80)
+    print(f"  API Server:     http://127.0.0.1:5001")
+    print(f"  Network Access: http://192.168.8.142:5001")
+    print(f"  Frontend CORS:  http://localhost:5173")
+    print(f"  AI Model:       {model_status} (CNN+LSTM, {model_params})")
+    print(f"  Database:       {len(users_db)} users, {len(dogs_db)} dogs, {len(history_db)} analyses")
+    print(f"  Debug Mode:     ON")
+    print("="*80)
+    print("  Status: Ready to accept requests")
+    print("  Press CTRL+C to stop the server")
+    print("="*80 + "\n")
+    
+    app.run(host='0.0.0.0', port=5001, debug=True, use_reloader=False)

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "user_1",
+    "name": "John Doe",
+    "email": "john@test.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-20T00:00:00"
+  },
+  {
+    "id": "user_2",
+    "name": "Dr. Smith",
+    "email": "vet@test.com",
+    "accountType": "vet",
+    "createdAt": "2026-03-20T00:00:00"
+  },
+  {
+    "id": "user_3",
+    "name": "senukn2001",
+    "email": "senukn2001@gmail.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-22T01:07:06.867463"
+  },
+  {
+    "id": "user_4",
+    "name": "herathnethmini26",
+    "email": "herathnethmini26@gmail.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-22T01:26:00.085111"
+  },
+  {
+    "id": "user_5",
+    "name": "kaweesha",
+    "email": "senu@gmail.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-22T01:28:26.370790"
+  },
+  {
+    "id": "user_6",
+    "name": "himalkavindu2001",
+    "email": "himalkavindu2001@gmail.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-22T01:43:30.210315"
+  },
+  {
+    "id": "user_7",
+    "name": "manee",
+    "email": "maniya2001@gmail.com",
+    "accountType": "vet",
+    "createdAt": "2026-03-22T01:56:38.891509"
+  },
+  {
+    "id": "user_8",
+    "name": "chandko",
+    "email": "senu2001@gmail.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-22T16:05:08.017667"
+  },
+  {
+    "id": "user_9",
+    "name": "test",
+    "email": "test@test.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-25T04:45:27.974894"
+  },
+  {
+    "id": "user_10",
+    "name": "Senuri Kaweesha",
+    "email": "hsr@gmail.com",
+    "accountType": "vet",
+    "createdAt": "2026-03-25T04:46:49.575131"
+  },
+  {
+    "id": "user_11",
+    "name": "kaweeeeeeee",
+    "email": "abc@gmail.com",
+    "accountType": "owner",
+    "createdAt": "2026-03-25T04:54:11.369392"
+  },
+  {
+    "id": "user_12",
+    "name": "Ruwa",
+    "email": "ruhi@gmail.com",
+    "accountType": "vet",
+    "createdAt": "2026-03-25T08:53:03.636408"
+  }
+]

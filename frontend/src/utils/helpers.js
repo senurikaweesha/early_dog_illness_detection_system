@@ -58,24 +58,27 @@ export const formatTimestamp = (timestamp) => {
  * @returns {object} Strength info {score, label, color}
  */
 export const getPasswordStrength = (password) => {
-  if (!password) return { score: 0, label: 'Weak', color: 'red' };
-  
+  // Safety check for empty or undefined password
+  if (!password || typeof password !== 'string') {
+    return { score: 0, label: 'weak', color: 'gray' };
+  }
+
   let score = 0;
   
   // Length check
   if (password.length >= 8) score++;
   if (password.length >= 12) score++;
   
-  // Character variety
+  // Character variety checks
   if (/[a-z]/.test(password)) score++; // lowercase
   if (/[A-Z]/.test(password)) score++; // uppercase
   if (/[0-9]/.test(password)) score++; // numbers
-  if (/[^A-Za-z0-9]/.test(password)) score++; // special chars
+  if (/[^a-zA-Z0-9]/.test(password)) score++; // special chars
   
   // Determine strength
-  if (score <= 2) return { score, label: 'Weak', color: 'red' };
-  if (score <= 4) return { score, label: 'Medium', color: 'orange' };
-  return { score, label: 'Strong', color: 'green' };
+  if (score <= 2) return 'weak';
+  if (score <= 4) return 'medium';
+  return 'strong';
 };
 
 /**
@@ -94,10 +97,24 @@ export const validateEmail = (email) => {
  * @param {string} password - Password to validate
  * @returns {boolean} True if password meets minimum requirements
  */
+
 export const validatePassword = (password) => {
-  if (!password) return false;
-  // At least 8 characters
-  return password.length >= 8;
+  if (!password || password.length < 8) {
+    return { valid: false, message: 'Password must be at least 8 characters long' };
+  }
+  
+  const hasLower = /[a-z]/.test(password);
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  
+  if (!hasLower || !hasUpper || !hasNumber) {
+    return { 
+      valid: false, 
+      message: 'Password must contain uppercase, lowercase, and numbers' 
+    };
+  }
+  
+  return { valid: true };
 };
 
 /**

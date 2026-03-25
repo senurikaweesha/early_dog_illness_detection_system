@@ -59,7 +59,7 @@ def build_model_from_scratch():
     # Build final model
     model = Model(inputs=video_input, outputs=output, name='ImprovedDogIllnessDetector')
     
-    print("Model architecture built!")
+    print("\nModel architecture built!")
     print(f"   Total params: {model.count_params():,}")
     
     return model
@@ -131,7 +131,7 @@ def create_production_model(weights_path='model/model_weights.json'):
         metrics=['accuracy']
     )
     
-    print("MODEL READY FOR PREDICTIONS!")
+    print("\nMODEL READY FOR PREDICTIONS!")
     print(f"   Input shape:  {model.input_shape}")
     print(f"   Output shape: {model.output_shape}")
     print(f"   Parameters:   {model.count_params():,}")

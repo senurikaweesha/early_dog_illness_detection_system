@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import {
-  CalendarIcon,
+  Dog,
+  Calendar,
   FileVideoIcon,
   ChevronRightIcon,
   Trash2Icon,
@@ -28,23 +29,21 @@ export const PredictionCard = ({ prediction, onViewDetails, onDelete }) => {
       >
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center overflow-hidden flex-shrink-0">
               {prediction.dogPhoto ? (
-                <img
-                  src={prediction.dogPhoto}
-                  alt={prediction.dogName}
+                <img 
+                  src={prediction.dogPhoto} 
+                  alt={prediction.dogName} 
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="font-bold text-gray-500">
-                  {prediction.dogName.charAt(0)}
-                </span>
+                <Dog className="w-6 h-6 text-blue-900" strokeWidth={1.5} />
               )}
             </div>
             <div>
               <h4 className="font-bold text-primary">{prediction.dogName}</h4>
               <div className="flex items-center text-xs text-gray-500 gap-1">
-                <CalendarIcon className="w-3 h-3" />
+                <Calendar className="w-3 h-3" />
                 {formatDate(prediction.date)}
               </div>
             </div>

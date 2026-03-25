@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  DogIcon,
-  MenuIcon,
-  XIcon,
-  UserIcon,
-  SettingsIcon,
-  LogOutIcon,
-  ChevronDownIcon,
+  Dog,
+  Menu,
+  X,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "./ui/Button";
@@ -58,7 +56,7 @@ export const Navbar = () => {
                 <img src="/brand_logo.png" alt="Brand Logo" className="w-14 h-14 object-cover rounded-lg" />
               </div>
               <span className="font-bold text-lg hidden sm:block text-[#BBDEFB]">
-                Early Dog Illness Detection System
+                TrustPaw AI
               </span>
               <span className="font-bold text-lg text-primary sm:hidden">
                 EDIDS
@@ -106,7 +104,7 @@ export const Navbar = () => {
                     <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center font-bold text-sm">
                       {user?.name.charAt(0).toUpperCase()}
                     </div>
-                    <ChevronDownIcon className="w-4 h-4 text-gray-500" />
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
                   </button>
 
                   <AnimatePresence>
@@ -147,7 +145,7 @@ export const Navbar = () => {
                               className="flex items-center gap-2 px-4 py-2 text-sm text-secondary font-medium hover:bg-secondary/5"
                               onClick={() => setIsUserMenuOpen(false)}
                             >
-                              <DogIcon className="w-4 h-4" /> Vet Portal
+                              <Dog className="w-4 h-4" /> Vet Portal
                             </Link>
                           )}
                         </div>
@@ -156,7 +154,7 @@ export const Navbar = () => {
                             onClick={handleLogout}
                             className="flex items-center gap-2 px-4 py-2 text-sm text-danger hover:bg-danger/5 w-full text-left"
                           >
-                            <LogOutIcon className="w-4 h-4" /> Logout
+                            <LogOut className="w-4 h-4" /> Logout
                           </button>
                         </div>
                       </motion.div>
@@ -176,9 +174,9 @@ export const Navbar = () => {
             >
               <span className="sr-only">Open main menu</span>
               {isMobileMenuOpen ? (
-                <XIcon className="block h-6 w-6" aria-hidden="true" />
+                <X className="block h-6 w-6" aria-hidden="true" />
               ) : (
-                <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                <Menu className="block h-6 w-6" aria-hidden="true" />
               )}
             </button>
           </div>

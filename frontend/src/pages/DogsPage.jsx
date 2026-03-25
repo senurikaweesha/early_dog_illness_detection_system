@@ -5,7 +5,7 @@ import { Button } from "../components/ui/Button";
 import { useToast } from "../hooks/useToast";
 import { getDogs, deleteDog } from "../services/api";
 import { formatAge } from "../utils/helpers";
-import { PlusIcon, Dog, Activity } from "lucide-react";
+import { Plus, Dog, Activity } from "lucide-react";
 
 export const DogsPage = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export const DogsPage = () => {
         </div>
         <Button
           onClick={() => navigate("/add-dog")}
-          icon={<PlusIcon className="w-5 h-5" />}
+          icon={<Plus className="w-5 h-5" />}
         >
           Add New Dog
         </Button>
@@ -67,7 +67,7 @@ export const DogsPage = () => {
           <Button
             onClick={() => navigate("/add-dog")}
             className="mt-4"
-            icon={<PlusIcon className="w-5 h-5" />}
+            icon={<Plus className="w-5 h-5" />}
           >
             Add Your First Dog
           </Button>
@@ -92,7 +92,7 @@ export const DogsPage = () => {
                     />
                   ) : (
                      <div className="w-full h-full bg-blue-50 flex items-center justify-center">
-                      <Dog className="w-10 h-10 text-blue-800" strokeWidth={1.5} />
+                      <Dog className="w-10 h-10 text-blue-900" strokeWidth={1.5} />
                     </div>
                   )}
                 </div>
@@ -119,6 +119,18 @@ export const DogsPage = () => {
                   {dog.totalAnalyses || 0} videos analyzed
                 </p>
               </div>
+
+              {/* Additional Notes */}
+              {dog.notes?.trim() ? (
+                <div className="mb-4 bg-orange-50/50 p-3 rounded-lg border border-orange-100">
+                  <p className="text-base font-bold text-orange-400 tracking-wide mb-1">
+                    Additional Notes
+                  </p>
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {dog.notes}
+                  </p>
+                </div>
+              ) : null}
 
               {/* Action Buttons */}
               <div className="flex gap-2">

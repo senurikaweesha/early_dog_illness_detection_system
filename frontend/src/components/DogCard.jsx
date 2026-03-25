@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dog, ActivityIcon } from "lucide-react";
+import { Dog, Activity } from "lucide-react";
 import { Button } from "./ui/Button";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 
@@ -42,7 +42,7 @@ export const DogCard = ({ dog, onViewHistory, onEdit, onDelete }) => {
         </div>
 
         <div className="flex items-center gap-2 mb-4">
-          <ActivityIcon className="w-4 h-4 text-gray-400" />
+          <Activity className="w-4 h-4 text-gray-400" />
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wide">
               TOTAL ANALYSES
@@ -52,6 +52,17 @@ export const DogCard = ({ dog, onViewHistory, onEdit, onDelete }) => {
             </p>
           </div>
         </div>
+
+        {dog.notes?.trim() ? (
+          <div className="mb-4 bg-orange-50/50 p-3 rounded-lg border border-orange-100">
+            <p className="text-sm font-bold text-orange-800 tracking-wide mb-1">
+              Additional Notes
+            </p>
+            <p className="text-sm text-gray-800 line-clamp-2">
+              {dog.notes}
+            </p>
+          </div>
+        ) : null}
 
         <Button
           variant="secondary"
