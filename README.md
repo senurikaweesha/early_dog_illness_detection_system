@@ -30,16 +30,17 @@ An AI-powered web application that detects early signs of illness in dogs throug
 
 ##  Performance Metrics
 
-The deployed model (`best_model_frozen.keras`) achieved the following performance metrics on the validation/test set:
+Following rigorous Stratified K-Fold Cross-Validation, the final mean performance metrics for the model are:
 
 | Metric | Score |
 |--------|-------|
-| **Validation Accuracy** | 83.33% |
-| **Precision** | 100.0% |
-| **Recall / Sensitivity** | 83.33% |
-| **Threshold** | 0.3 |
+| **Mean Accuracy** | 70.58% ± 7.87% |
+| **Mean Precision** | 69.61% ± 8.06% |
+| **Mean Recall** | 76.04% ± 15.18% |
+| **Mean F1-Score** | 0.7168 ± 0.0799 |
+| **Mean AUC** | 0.8219 ± 0.0941 |
 
-*(Note: While rigorous K-Fold cross-validation yields a mean accuracy of ~71% across all data splits, the specific tuned model currently deployed in the application successfully achieves 83.33% accuracy on its holdout validation set.)*
+*(Note: These metrics represent the average results across all folds during cross-validation, demonstrating the model's robustness across different data subsets.)*
 
 ---
 
