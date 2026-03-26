@@ -11,6 +11,10 @@ from xai_feature_explainer import generate_xai_insights
 
 app = Flask(__name__)
 
+# Environment configuration
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+PORT = int(os.environ.get('PORT', 5001))
+
 # ============================================
 # CORS CONFIGURATION
 # ============================================
@@ -21,6 +25,8 @@ CORS(app, resources={
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:3000",
+            "https://trustpaw-ai.vercel.app",
+            "https://*.vercel.app",
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "Accept"]
@@ -708,27 +714,34 @@ if __name__ == '__main__':
     import os
     import logging
     
-    # Suppress Flask's werkzeug logs
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.WARNING)
+    # Get port from environment (Render sets this)
+    port = int(os.environ.get('PORT', 5001))
+    debug = os.environ.get('DEBUG', 'False') == 'True'
     
-    # Check model status
-    model = get_model()
-    model_status = "Loaded" if model is not None else "Not Loaded"
-    model_params = f"{model.count_params():,} params" if model is not None else "N/A"
+    # Suppress Flask's werkzeug logs in production
+    if not debug:
+        log = logging.getLogger('werkzeug')
+        log.setLevel(logging.WARNING)
     
-    print("\n" + "="*80)
-    print("TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
-    print("="*80)
-    print(f"  API Server:     http://127.0.0.1:5001")
-    print(f"  Network Access: http://192.168.8.142:5001")
-    print(f"  Frontend CORS:  http://localhost:5173")
-    print(f"  AI Model:       {model_status} (CNN+LSTM, {model_params})")
-    print(f"  Database:       {len(users_db)} users, {len(dogs_db)} dogs, {len(history_db)} analyses")
-    print(f"  Debug Mode:     ON")
-    print("="*80)
-    print("  Status: Ready to accept requests")
-    print("  Press CTRL+C to stop the server")
-    print("="*80 + "\n")
+    # Only show startup message once
+    if debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        print("\n" + "="*80)
+        print("🐾 TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
+        print("="*80)
+        
+        model = get_model()
+        model_status = "Loaded ✅" if model is not None else "Not Loaded ⚠️"
+        model_params = f"{model.count_params():,} params" if model is not None else "N/A"
+        
+        print(f"  Environment:    {'Development' if debug else 'Production'}")
+        print(f"  API Server:     http://0.0.0.0:{port}")
+        print(f"  AI Model:       {model_status} ({model_params})")
+        print(f"  Database:       {len(users_db)} users, {len(dogs_db)} dogs, {len(history_db)} analyses")
+        print(f"  Debug Mode:     {'ON' if debug else 'OFF'}")
+        print("="*80)
+        print("  Status: Ready to accept requests")
+        if debug:
+            print("  Press CTRL+C to stop the server")
+        print("="*80 + "\n")
     
-    app.run(host='0.0.0.0', port=5001, debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=port, debug=debug, use_reloader=False)

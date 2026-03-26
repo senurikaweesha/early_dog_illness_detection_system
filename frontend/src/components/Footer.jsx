@@ -67,7 +67,7 @@ export const Footer = () => {
             {/* Email */}
             <a
               href="mailto:nethmini.20221487@iit.ac.lk"
-              className="flex items-center gap-3 text-sm text-slate-300 hover:text-blue-400 transition-all duration-200 group"
+              className="flex items-center gap-3 text-sm text-slate-300 hover:text-blue-400 transition-all duration-200 group tracking-wider"
             >
               <div className="bg-blue-500/10 p-2 rounded-lg group-hover:bg-blue-500/20 transition-all duration-200 border border-blue-500/20">
                 <Mail className="w-4 h-4 text-blue-400" />
@@ -85,7 +85,7 @@ export const Footer = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-sm">
             <p className="text-slate-400 text-center md:text-left tracking-wider">
-              © {currentYear} TrustPaw AI - Early Dog Illness Detection System. All rights reserved.
+              © {currentYear} TrustPaw AI - Early Dog Illness Detection System. All Rights Reserved.
             </p>
 
           </div>
