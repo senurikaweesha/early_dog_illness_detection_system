@@ -13,7 +13,7 @@ export const Textarea = memo(({
     <div className={`w-full ${className}`}>
       <label
         htmlFor={textareaId}
-        className="block text-sm font-bold text-blue-900 mb-1"
+        className="block text-sm font-bold text-blue-900 mb-1 tracking-wider"
       >
         {label} {required && <span className="text-danger">*</span>}
       </label>

@@ -61,12 +61,14 @@ export const DashboardPage = () => {
       value: `${stats.totalDogs} Dog${stats.totalDogs === 1 ? '' : 's'} Registered`,
       icon: <Dog className="w-8 h-8 text-secondary" strokeWidth={1.5} />,
       bg: "bg-secondary/10",
+      textColor: "text-secondary",
     },
     {
       title: "Total Analyses",
       value: `${stats.totalAnalyses} Videos Analyzed`,
       icon: <Video className="w-8 h-8 text-accent-dark" strokeWidth={1.5}/>,
       bg: "bg-accent/20",
+      textColor: "text-accent-dark",
     },
     {
       title: "Recent Alerts",
@@ -78,6 +80,7 @@ export const DashboardPage = () => {
         />
       ),
       bg: "bg-danger/10",
+      textColor: "text-danger",
     },
   ];
 
@@ -98,6 +101,7 @@ export const DashboardPage = () => {
             value={stat.value}
             icon={stat.icon}
             bg={stat.bg}
+            textColor={stat.textColor}
             delay={index * 0.1}
           />
         ))}

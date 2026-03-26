@@ -198,10 +198,10 @@ export const AnalyzePage = () => {
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <p className="text-base text-yellow-700 mb-2">
+                    <p className="text-sm text-yellow-700 mb-2 tracking-wider">
                       <strong>Important:</strong> Only upload videos showing ONE dog's behavior. 
                     </p>
-                    <ul className="text-base text-yellow-600 list-disc list-inside space-y-1">
+                    <ul className="text-sm text-yellow-600 list-disc list-inside space-y-1 tracking-wider">
                       <li>Video should show a single dog clearly visible</li>
                       <li>Videos with multiple dogs, cats, or other animals will be rejected</li>
                       <li>Ensure good lighting and the dog is the main subject</li>
@@ -228,7 +228,7 @@ export const AnalyzePage = () => {
                   className="mt-1 w-8 h-8 text-secondary border-gray-300 rounded focus:ring-secondary focus:ring-7 cursor-pointer"
                   disabled={!selectedDog || !selectedFile}
                 />
-                <span className={`text-sm ${!selectedDog || !selectedFile ? 'text-gray-400' : 'text-gray-700 group-hover:text-gray-900'}`}>
+                <span className={`text-sm ${!selectedDog || !selectedFile ? 'text-gray-400' : 'text-gray-700 group-hover:text-gray-900 tracking-wider'}`}>
                   I confirm that this video contains a <strong>dog</strong>(pet, street, or shelter dog).
                   This system is designed specifically for dog behavior analysis and should not be used for other animals or wildlife.
                 </span>

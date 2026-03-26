@@ -374,7 +374,7 @@ useEffect(() => {
 
             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
               <div>
-                <p className="text-sm text-gray-400 font-bold">
+                <p className="text-sm text-gray-400 font-bold tracking-wider">
                   Confidence Score
                 </p>
                 <p className="text-xl text-blue-900 font-bold">
@@ -382,10 +382,10 @@ useEffect(() => {
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-400 font-bold">
+                <p className="text-sm text-gray-400 font-bold tracking-wider">
                   Video File
                 </p>
-                <p className="text-sm text-gray-900 font">
+                <p className="text-sm text-gray-700 font">
                   {selectedPrediction.filename}
                 </p>
               </div>
@@ -397,7 +397,7 @@ useEffect(() => {
                 <p className="text-base font-bold text-orange-400 tracking-wide mb-1">
                   Additional Notes
                 </p>
-                <p className="text-sm text-gray-800">
+                <p className="text-sm text-gray-800 tracking-wider">
                   {selectedPrediction.dogNotes}
                 </p>
               </div>
@@ -407,7 +407,7 @@ useEffect(() => {
               <h4 className="font-bold text-secondary flex items-center gap-2 mb-3">
                 <ActivityIcon className="w-5 h-5" /> Recommendation
               </h4>
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed tracking-wider mb-1">
                 {selectedPrediction.recommendation}
               </p>
             </div>
@@ -418,25 +418,25 @@ useEffect(() => {
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <div>
-                  <p className="text-gray-500 mb-1">Model</p>
+                  <p className="text-gray-500 mb-1 tracking-wider">Model</p>
                   <p className="font-medium text-gray-900">
                     CNN+LSTM MobileNetV2
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500 mb-1">Frames</p>
+                  <p className="text-gray-500 mb-1 tracking-wider">Frames</p>
                   <p className="font-medium text-gray-900">
                     {selectedPrediction.framesAnalyzed}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500 mb-1">Probability</p>
+                  <p className="text-gray-500 mb-1 tracking-wider">Probability</p>
                   <p className="font-medium text-gray-900">
                     {selectedPrediction.probability.toFixed(4)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500 mb-1">Threshold</p>
+                  <p className="text-gray-500 mb-1" tracking-wider>Threshold</p>
                   <p className="font-medium text-gray-900">0.3</p>
                 </div>
               </div>
@@ -454,17 +454,17 @@ useEffect(() => {
                   <div className="space-y-4">
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                       <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Status</p>
-                      <p className="text-sm text-gray-900">{selectedPrediction.vetFeedback.status}</p>
+                      <p className="text-sm text-gray-900 tracking-wider">{selectedPrediction.vetFeedback.status}</p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                       <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Expert Comments</p>
-                      <p className="text-gray-800 text-sm whitespace-pre-wrap">{selectedPrediction.vetFeedback.comments}</p>
+                      <p className="text-gray-800 text-sm whitespace-pre-wrap tracking-wider">{selectedPrediction.vetFeedback.comments}</p>
                     </div>
 
                     <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
                       <p className="text-xs text-secondary font-bold uppercase tracking-wider mb-1">Recommendations for Owner</p>
-                      <p className="text-gray-800 text-sm whitespace-pre-wrap">{selectedPrediction.vetFeedback.recommendations}</p>
+                      <p className="text-gray-800 text-sm whitespace-pre-wrap tracking-wider">{selectedPrediction.vetFeedback.recommendations}</p>
                     </div>
 
                     <p className="text-xs text-gray-500 text-right mt-2">
@@ -493,13 +493,13 @@ useEffect(() => {
                         Validation Status <span className="text-danger">*</span>
                       </label>
                       <select
-                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:ring-secondary text-sm"
+                        className="w-full rounded-lg border-gray-300 shadow-sm focus:border-secondary focus:ring-secondary text-sm tracking-wider"
                         value={feedback.status}
                         onChange={e => setFeedback(prev => ({ ...prev, status: e.target.value }))}
                       >
-                        <option value="Confirmed">Confirmed (Agree with AI)</option>
-                        <option value="Needs Further Examination">Needs Further Examination (In-person visit required)</option>
-                        <option value="Inconclusive">Inconclusive (Disagree with AI / Normal behavior)</option>
+                        <option className="tracking-wider" value="Confirmed">Confirmed (Agree with AI)</option>
+                        <option className="tracking-wider" value="Needs Further Examination">Needs Further Examination (In-person visit required)</option>
+                        <option className="tracking-wider" value="Inconclusive">Inconclusive (Disagree with AI / Normal behavior)</option>
                       </select>
                     </div>
 

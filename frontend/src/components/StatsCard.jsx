@@ -5,6 +5,7 @@ export const StatsCard = ({
   value,
   icon,
   bg = "bg-secondary/10",
+  textColor = "text-gray-500",
   delay = 0,
 }) => {
   return (
@@ -24,7 +25,7 @@ export const StatsCard = ({
     >
       <div className={`p-4 rounded-xl ${bg}`}>{icon}</div>
       <div>
-        <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">
+        <p className={`text-sm ${textColor} font-bold uppercase tracking-wider`}>
           {title}
         </p>
         <p className="text-lg font-bold text-primary">{value}</p>

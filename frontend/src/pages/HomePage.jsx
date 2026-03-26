@@ -242,7 +242,7 @@ export const HomePage = () => {
               <h2 className="text-3xl font-bold text-primary mb-6">
                 About This System
               </h2>
-              <div className="prose prose-lg text-gray-600 space-y-6">
+              <div className="prose prose-lg text-gray-600 space-y-6 tracking-wider">
                 <p>
                   This system uses a custom-trained CNN+LSTM deep learning model to analyze
                   short videos of dog behavior and classify them as Normal or
@@ -259,7 +259,7 @@ export const HomePage = () => {
               </div>
               <br />
               <DisclaimerBox>
-                <p>
+                <p className="tracking-wider">
                   This tool is not a substitute for professional veterinary
                   advice. Always consult a qualified veterinarian for diagnosis
                   and treatment decisions.
@@ -280,7 +280,7 @@ export const HomePage = () => {
               }}
               className="bg-primary rounded-3xl p-8 text-white shadow-2xl"
             >
-              <h3 className="text-2xl font-bold mb-8">Technical Overview</h3>
+              <h3 className="text-2xl font-bold mb-8 tracking-wider">Technical Overview</h3>
               <ul className="space-y-6">
                 {[
                   {
@@ -311,8 +311,8 @@ export const HomePage = () => {
                   <li key={i} className="flex gap-4">
                     <CheckCircle2Icon className="w-6 h-6 text-accent flex-shrink-0" />
                     <div>
-                      <h4 className="font-bold text-white">{item.title}</h4>
-                      <p className="text-sm text-gray-300 mt-1">{item.desc}</p>
+                      <h4 className="font-bold text-white tracking-wider">{item.title}</h4>
+                      <p className="text-sm text-gray-300 mt-1 tracking-wider">{item.desc}</p>
                     </div>
                   </li>
                 ))}
@@ -341,7 +341,7 @@ export const HomePage = () => {
             <h2 className="text-4xl font-bold mb-6">
               Ready to Monitor Your Dog's Health?
             </h2>
-            <p className="text-xl text-accent-light mb-10">
+            <p className="text-xl text-accent-light mb-10 tracking-wider">
               Join today and get peace of mind with AI-powered behavioral
               analysis.
             </p>

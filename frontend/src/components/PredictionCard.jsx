@@ -41,8 +41,8 @@ export const PredictionCard = ({ prediction, onViewDetails, onDelete }) => {
               )}
             </div>
             <div>
-              <h4 className="font-bold text-primary">{prediction.dogName}</h4>
-              <div className="flex items-center text-xs text-gray-500 gap-1">
+              <h4 className="font-bold text-primary tracking-wider">{prediction.dogName}</h4>
+              <div className="flex items-center text-xs text-gray-500 gap-1 tracking-wider">
                 <Calendar className="w-3 h-3" />
                 {formatDate(prediction.date)}
               </div>
@@ -60,7 +60,7 @@ export const PredictionCard = ({ prediction, onViewDetails, onDelete }) => {
 
         <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg text-sm">
           <div>
-            <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
+            <p className="text-gray-500 text-xs uppercase tracking-wider">
               Confidence
             </p>
             <p className="font-bold text-primary">
@@ -79,7 +79,7 @@ export const PredictionCard = ({ prediction, onViewDetails, onDelete }) => {
         </div>
 
         <div className="mb-6 flex-1">
-          <div className="flex items-start gap-2 text-sm text-gray-600 bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+          <div className="flex items-start gap-2 text-sm text-gray-600 bg-blue-50/50 p-3 rounded-lg border border-blue-100 tracking-wider">
             <AlertCircleIcon className="w-4 h-4 text-secondary flex-shrink-0 mt-0.5" />
             <p>
               {truncateText(prediction.recommendation, 100)}

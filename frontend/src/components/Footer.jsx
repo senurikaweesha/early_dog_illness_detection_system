@@ -25,7 +25,7 @@ export const Footer = () => {
             </div>
             
             {/* Description */}
-            <p className="text-sm text-slate-300 leading-relaxed max-w-md">
+            <p className="text-sm text-slate-300 leading-relaxed max-w-md tracking-wider">
               AI-Powered Early Health Monitoring for Your Dog. Detect behavioral patterns early and consult your veterinarian with confidence.
             </p>
             
@@ -33,11 +33,11 @@ export const Footer = () => {
 
           {/* Quick Links - Balanced spacing */}
           <div className="md:col-span-3 space-y-4">
-            <h4 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+            <h4 className="text-base font-bold text-white tracking-tight flex items-center gap-2 tracking-wider">
               <div className="h-1 w-1 bg-blue-400 rounded-full"></div>
               Quick Links
             </h4>
-            <nav className="space-y-2.5">
+            <nav className="space-y-2.5 tracking-wider">
               {[
                 { to: '/dashboard', label: 'Dashboard' },
                 { to: '/analyze', label: 'Analyze Video' },
@@ -59,7 +59,7 @@ export const Footer = () => {
 
           {/* Contact & Info - Balanced spacing */}
           <div className="md:col-span-4 space-y-4">
-            <h4 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
+            <h4 className="text-base font-bold text-white tracking-tight flex items-center gap-2 tracking-wider">
               <div className="h-1 w-1 bg-blue-400 rounded-full"></div>
               Contact & Info
             </h4>
@@ -84,7 +84,7 @@ export const Footer = () => {
       <div className="border-t border-slate-700/50 bg-slate-950/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-sm">
-            <p className="text-slate-400 text-center md:text-left">
+            <p className="text-slate-400 text-center md:text-left tracking-wider">
               © {currentYear} TrustPaw AI - Early Dog Illness Detection System. All rights reserved.
             </p>
 

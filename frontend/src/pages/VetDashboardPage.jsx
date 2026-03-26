@@ -131,13 +131,13 @@ export const VetDashboardPage = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100 text-sm text-gray-500 uppercase tracking-wider">
-                <th className="p-4 font-bold">Owner & Dog</th>
-                <th className="p-4 font-bold">Upload Date</th>
-                <th className="p-4 font-bold">AI Result</th>
-                <th className="p-4 font-bold">Urgency</th>
-                <th className="p-4 font-bold">Status</th>
-                <th className="p-4 font-bold text-right">Actions</th>
+              <tr className="bg-gray-50 border-b border-gray-100 text-sm text-gray-600 uppercase tracking-wider">
+                <th className="p-4 font">Owner & Dog</th>
+                <th className="p-4 font">Upload Date</th>
+                <th className="p-4 font">AI Result</th>
+                <th className="p-4 font">Urgency</th>
+                <th className="p-4 font">Status</th>
+                <th className="p-4 font text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -172,17 +172,17 @@ export const VetDashboardPage = () => {
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-primary">
+                          <p className="font-bold text-primary tracking-wider">
                             {caseItem.dogName}
                           </p>
-                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <p className="text-xs text-blue-900 flex items-center gap-1 tracking-wider">
                             <User className="w-3 h-3" />{" "}
                             {caseItem.ownerName}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-sm text-gray-600">
+                    <td className="p-4 text-sm text-gray-500 tracking-wider">
                       {formatDate(caseItem.uploadDate)}
                     </td>
                     <td className="p-4">
@@ -262,26 +262,26 @@ export const VetDashboardPage = () => {
             {/* Left Column: Case Details */}
             <div className="space-y-6">
               <div className="bg-gray-50 p-5 rounded-xl border border-gray-100">
-                <h3 className="font-bold text-primary mb-4 flex items-center gap-2 border-b border-gray-200 pb-2">
+                <h3 className="font-bold text-primary mb-4 flex items-center gap-2 border-b border-gray-200 pb-2 tracking-wider">
                   <User className="w-5 h-5 text-secondary" /> Owner &
                   Patient Info
                 </h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm tracking-wider">
                   <div>
                     <p className="text-gray-500 mb-1">Owner Name</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 tracking-wider">
                       {selectedCase.ownerName}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500 mb-1">Upload Date</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 tracking-wider">
                       {formatDate(selectedCase.uploadDate)}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500 mb-1">Patient Name</p>
-                    <p className="font-medium text-gray-900 flex items-center gap-1">
+                    <p className="font-medium text-gray-900 flex items-center gap-1 tracking-wider">
                       <Dog className="w-4 h-4 text-gray-400" />{" "}
                       {selectedCase.dogName}
                     </p>
@@ -298,10 +298,10 @@ export const VetDashboardPage = () => {
               {/* Additional Notes */}
               {selectedCase.dogNotes?.trim() ? (
                 <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100">
-                  <p className="text-base font-bold text-orange-400 tracking-wide mb-1">
+                  <p className="text-base font-bold text-orange-400 tracking-wider mb-1">
                     Additional Notes
                   </p>
-                  <p className="text-sm text-gray-800">
+                  <p className="text-sm text-gray-800 tracking-wider">
                     {selectedCase.dogNotes}
                   </p>
                 </div>
@@ -323,7 +323,7 @@ export const VetDashboardPage = () => {
                     {selectedCase.classification}
                   </Badge>
                   <div className="text-sm">
-                    <span className="text-gray-500 mr-2">Confidence:</span>
+                    <span className="text-gray-500 mr-2 tracking-wider">Confidence:</span>
                     <span className="font-bold text-primary">
                       {formatConfidence(selectedCase.confidence)}
                     </span>
@@ -356,7 +356,7 @@ export const VetDashboardPage = () => {
 
               <div className="bg-warning/10 border-l-4 border-warning p-3 rounded-r-lg flex gap-3">
                 <AlertCircle className="w-5 h-5 text-warning flex-shrink-0" />
-                <p className="text-xs text-warning-dark">
+                <p className="text-xs text-warning-dark tracking-wider">
                   Video file has been deleted in compliance with GDPR. Only
                   metadata and extracted feature summaries are retained.
                 </p>
@@ -371,7 +371,7 @@ export const VetDashboardPage = () => {
 
               {selectedCase.status === "Reviewed" ? (
                 <div className="space-y-6">
-                  <div className="flex items-center gap-2 text-success-dark bg-success/10 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 text-success-dark bg-success/10 p-3 rounded-lg tracking-wider">
                     <CheckCircle2 className="w-5 h-5" />
                     <span className="font-medium">
                       Feedback already submitted
@@ -381,18 +381,18 @@ export const VetDashboardPage = () => {
                   {selectedCase.vetFeedback && (
                     <div className="mt-4 space-y-4">
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Status</p>
-                        <p className="text-sm text-gray-900">{selectedCase.vetFeedback.status}</p>
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1 tracking-wider">Status</p>
+                        <p className="text-sm text-gray-900 tracking-wider">{selectedCase.vetFeedback.status}</p>
                       </div>
 
                       <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Expert Comments</p>
-                        <p className="text-gray-800 text-sm whitespace-pre-wrap">{selectedCase.vetFeedback.comments}</p>
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1 tracking-wider">Expert Comments</p>
+                        <p className="text-gray-800 text-sm whitespace-pre-wrap tracking-wider">{selectedCase.vetFeedback.comments}</p>
                       </div>
 
                       <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                        <p className="text-xs text-secondary font-bold uppercase tracking-wider mb-1">Recommendations for Owner</p>
-                        <p className="text-gray-800 text-sm whitespace-pre-wrap">{selectedCase.vetFeedback.recommendations}</p>
+                        <p className="text-xs text-secondary font-bold uppercase tracking-wider mb-1 tracking-wider">Recommendations for Owner</p>
+                        <p className="text-gray-800 text-sm whitespace-pre-wrap tracking-wider">{selectedCase.vetFeedback.recommendations}</p>
                       </div>
 
                       <p className="text-xs text-gray-500 text-right mt-2">
@@ -404,7 +404,7 @@ export const VetDashboardPage = () => {
               ) : (
                 <form onSubmit={handleSubmitFeedback} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-bold text-blue-900 mb-3">
+                    <label className="block text-sm font-bold text-blue-900 mb-3 tracking-wider">
                       Validation Status <span className="text-danger">*</span>
                     </label>
                     <div className="space-y-3">
@@ -442,7 +442,7 @@ export const VetDashboardPage = () => {
                             className="w-4 h-4 text-secondary focus:ring-secondary border-gray-300 mt-0.5"
                           />
 
-                          <span className="text-sm font-medium text-gray-800">
+                          <span className="text-sm font-medium text-gray-800 tracking-wider">
                             {option.label}
                           </span>
                         </label>
