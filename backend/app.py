@@ -29,7 +29,7 @@ CORS(app, resources={
             "https://trustpawaiearlydogillnessdetections.vercel.app",
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization", "Accept"]
+        "allow_headers": ["Content-Type", "Authorization", "Accept", "ngrok-skip-browser-warning"]
     }
 })
 
