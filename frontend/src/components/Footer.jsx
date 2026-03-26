@@ -19,7 +19,7 @@ export const Footer = () => {
                 <Dog className="w-7 h-7 text-blue-400" strokeWidth={1.1} />
               </div>
               <div>
-                <h3 className="text-2xl font-bold tracking-tight">PawTrust AI</h3>
+                <h3 className="text-2xl font-bold tracking-tight">TrustPaw AI</h3>
                 <h4 className="text-xl text-blue-200 tracking-tight">Early Dog Illness Detection System</h4>
               </div>
             </div>
