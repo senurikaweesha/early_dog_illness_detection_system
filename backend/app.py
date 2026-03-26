@@ -26,7 +26,7 @@ CORS(app, resources={
             "http://localhost:5174",
             "http://localhost:3000",
             "https://trustpaw-ai.vercel.app",
-            "https://*.vercel.app",
+            "https://trustpawaiearlydogillnessdetections.vercel.app",
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "Accept"]
