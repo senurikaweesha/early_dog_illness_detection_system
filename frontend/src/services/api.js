@@ -2,6 +2,8 @@
 import axios from "axios";
 import { API_ENDPOINTS, STORAGE_KEYS } from "../constants";
 import config from "../config/env";
+import { auth, db } from '../config/firebase';
+import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
 
 const API_BASE_URL = config.apiBaseUrl;
 
@@ -132,8 +134,8 @@ export const getHistory = async () => {
   // Filter for dog owners only (vets see all)
   if (currentUser.accountType === "owner") {
     // Get user's dogs
-    const dogsResponse = await api.get(`${API_ENDPOINTS.DOGS}?userId=${currentUser.id}`);
-    const userDogIds = dogsResponse.data.map(dog => dog.id);
+    const dogs = await getDogs();
+    const userDogIds = dogs.map(dog => dog.id);
     
     console.log(`User owns ${userDogIds.length} dogs:`, userDogIds);
     
@@ -177,63 +179,72 @@ export const deleteHistory = async (id) => {
 // ============================================
 
 export const getDogs = async () => {
-  // Get current user
   const currentUserObj = localStorage.getItem("currentUser");
-  if (!currentUserObj) {
-    console.log("No user logged in");
-    return [];
-  }
-  
+  if (!currentUserObj) return [];
   const currentUser = JSON.parse(currentUserObj);
   
-  // Backend handles filtering by userId
-  const response = await api.get(`${API_ENDPOINTS.DOGS}?userId=${currentUser.id}`);
-  
-  console.log(`Fetched ${response.data.length} dogs for user ${currentUser.id}`);
-  
-  return response.data;
+  try {
+    const q = query(collection(db, "dogs"), where("userId", "==", currentUser.id));
+    const querySnapshot = await getDocs(q);
+    const dogs = [];
+    querySnapshot.forEach((doc) => {
+      dogs.push({ id: doc.id, ...doc.data() });
+    });
+    return dogs;
+  } catch(error) {
+    console.error("Failed to fetch dogs from Firebase:", error);
+    throw new APIError("Failed to fetch dogs", 500, error);
+  }
 };
 
 export const getDogById = async (id) => {
-  return handleAPICall(
-    async () => api.get(`${API_ENDPOINTS.DOGS}/${id}`),
-    'Failed to fetch dog'
-  );
+  try {
+    const docRef = doc(db, "dogs", id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) throw new Error("Dog not found");
+    return { id: docSnap.id, ...docSnap.data() };
+  } catch(error) {
+    throw new APIError("Failed to fetch dog", 500, error);
+  }
 };
 
 export const addDog = async (dogData) => {
-  // Get current user
   const currentUserObj = localStorage.getItem("currentUser");
   const currentUser = currentUserObj ? JSON.parse(currentUserObj) : null;
   const userId = currentUser?.id || 'unknown';
   
-  // Add userId to dog data
   const dogDataWithUser = {
     ...dogData,
     userId: userId
   };
   
-  console.log("Adding dog:", dogDataWithUser);
-  
-  const response = await api.post(API_ENDPOINTS.DOGS, dogDataWithUser);
-  
-  console.log("Dog added:", response.data);
-  
-  return response.data;
+  try {
+    const docRef = await addDoc(collection(db, "dogs"), dogDataWithUser);
+    return { id: docRef.id, ...dogDataWithUser };
+  } catch(error) {
+    console.error("Failed to add dog to Firebase:", error);
+    throw new APIError("Failed to add dog", 500, error);
+  }
 };
 
 export const updateDog = async (id, dogData) => {
-  return handleAPICall(
-    async () => api.put(`${API_ENDPOINTS.DOGS}/${id}`, dogData),
-    'Failed to update dog'
-  );
+  try {
+    const docRef = doc(db, "dogs", id);
+    await updateDoc(docRef, dogData);
+    return { id, ...dogData };
+  } catch(error) {
+    throw new APIError("Failed to update dog", 500, error);
+  }
 };
 
 export const deleteDog = async (id) => {
-  return handleAPICall(
-    async () => api.delete(`${API_ENDPOINTS.DOGS}/${id}`),
-    'Failed to delete dog'
-  );
+  try {
+    const docRef = doc(db, "dogs", id);
+    await deleteDoc(docRef);
+    return { success: true };
+  } catch(error) {
+    throw new APIError("Failed to delete dog", 500, error);
+  }
 };
 
 // ============================================

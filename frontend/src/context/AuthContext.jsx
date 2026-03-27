@@ -1,5 +1,7 @@
 import React, { useEffect, useState, createContext } from "react";
-import { login as loginAPI, register as registerAPI } from '../services/api';
+import { auth, db } from '../config/firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 export const AuthContext = createContext(undefined);
 
@@ -21,20 +23,34 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      // Call REAL backend API
-      const response = await loginAPI(email, password);
+      // Call Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const loggedInUser = userCredential.user;
       
-      const loggedInUser = response.user;
+      // Fetch user metadata from Firestore
+      const docRef = doc(db, "users", loggedInUser.uid);
+      const docSnap = await getDoc(docRef);
       
-      console.log("Backend login successful:", loggedInUser);
+      let userData = {
+        id: loggedInUser.uid,
+        email: loggedInUser.email,
+        name: "User",
+        accountType: "owner"
+      };
+
+      if (docSnap.exists()) {
+        userData = { ...userData, ...docSnap.data() };
+      }
       
-      // Store real user data from backend
-      setUser(loggedInUser);
-      localStorage.setItem("currentUser", JSON.stringify(loggedInUser));
-      localStorage.setItem("authToken", response.token || "mock-jwt-token-123");
+      console.log("Firebase login successful:", userData);
+      
+      // Store real user data from Firebase
+      setUser(userData);
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+      localStorage.setItem("authToken", loggedInUser.accessToken || "firebase-token");
       
       setLoading(false);
-      return loggedInUser;
+      return userData;
     } catch (error) {
       setLoading(false);
       console.error("Login failed:", error);
@@ -45,20 +61,29 @@ export const AuthProvider = ({ children }) => {
   const signup = async (data) => {
     setLoading(true);
     try {
-      // Call REAL backend API
-      const response = await registerAPI(data);
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const newUser = userCredential.user;
       
-      const newUser = response.user;
+      const userData = {
+        id: newUser.uid,
+        name: data.name,
+        email: data.email,
+        accountType: data.accountType,
+      };
+
+      // Save user metadata to Firestore
+      await setDoc(doc(db, "users", newUser.uid), userData);
       
-      console.log("Registration successful:", newUser);
+      console.log("Firebase Registration successful:", userData);
       
-      // Store real user data from backend
-      setUser(newUser);
-      localStorage.setItem("currentUser", JSON.stringify(newUser));
-      localStorage.setItem("authToken", response.token || "mock-jwt-token-123");
+      // Store user data
+      setUser(userData);
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+      localStorage.setItem("authToken", newUser.accessToken || "firebase-token");
       
       setLoading(false);
-      return newUser;
+      return userData;
     } catch (error) {
       setLoading(false);
       console.error("Registration failed:", error);
@@ -66,7 +91,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch(err) {
+      console.error("Firebase signout error", err);
+    }
     setUser(null);
     localStorage.removeItem("currentUser");
     localStorage.removeItem("authToken");
