@@ -43,17 +43,22 @@ export const Footer = () => {
                 { to: '/analyze', label: 'Analyze Video' },
                 { to: '/history', label: 'View History' },
                 { to: '/dogs', label: 'Dog Profiles' },
-                { to: '/how-it-works', label: 'How It Works' },
-                { to: '/about', label: 'About' }
-              ].map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="block text-sm text-slate-400 hover:text-blue-400 hover:translate-x-1 transition-all duration-200 ease-out"
-                >
-                  {link.label}
-                </Link>
-              ))}
+                { to: '/#how-it-works', label: 'How It Works' },
+                { to: '/#about', label: 'About' }
+              ].map((link) => {
+                const isHash = link.to.startsWith('/#');
+                const className = "block text-sm text-slate-400 hover:text-blue-400 hover:translate-x-1 transition-all duration-200 ease-out tracking-wider";
+                
+                return isHash ? (
+                  <a key={link.to} href={link.to} className={className}>
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link key={link.to} to={link.to} className={className}>
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 

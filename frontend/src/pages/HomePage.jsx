@@ -254,7 +254,7 @@ export const HomePage = () => {
                   The model extracts 30 frames from each video, processes them
                   through a MobileNetV2 convolutional neural network for spatial feature
                   extraction, and then uses an LSTM layer to capture temporal
-                  behavioral patterns. <strong>Our latest trained model achieved an impressive 83.33% validation accuracy</strong> on unseen behavioral test data.
+                  behavioral patterns. <strong>Our latest trained model achieved an impressive 78% validation accuracy</strong> on unseen behavioral test data.
                 </p>
               </div>
               <br />
@@ -297,7 +297,7 @@ export const HomePage = () => {
                   },
                   {
                     title: "Classification",
-                    desc: "Binary prediction (Normal/Abnormal) with 83.33% validated accuracy",
+                    desc: "Binary prediction (Normal/Abnormal) with 78% validated accuracy",
                   },
                   {
                     title: "XAI Generation",
