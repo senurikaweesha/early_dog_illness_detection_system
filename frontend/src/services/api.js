@@ -223,6 +223,19 @@ export const getDogs = async () => {
     querySnapshot.forEach((doc) => {
       dogs.push({ id: doc.id, ...doc.data() });
     });
+    
+    // Dynamically calculate total analyses from backend history
+    try {
+      const historyResponse = await api.get(API_ENDPOINTS.HISTORY);
+      const rawHistory = historyResponse.data || [];
+      dogs.forEach(dog => {
+        const analyses = rawHistory.filter(h => h.dogId === dog.id);
+        dog.totalAnalyses = analyses.length;
+      });
+    } catch(err) {
+      console.warn("Could not fetch history to populate totalAnalyses", err);
+    }
+    
     return dogs;
   } catch(error) {
     console.error("Failed to fetch dogs from Firebase:", error);
