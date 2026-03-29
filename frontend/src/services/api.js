@@ -129,13 +129,31 @@ export const getHistory = async () => {
     vetFeedback: vetFeedbacks[item.id] || null
   }));
   
-  console.log(`Total predictions in system: ${result.length}`);
-  
+  // Fetch all dogs from Firebase to hydrate the placeholders
+  let fbDogs = [];
+  try {
+    const qSnap = await getDocs(collection(db, "dogs"));
+    qSnap.forEach(doc => { fbDogs.push({ id: doc.id, ...doc.data() }); });
+  } catch (e) {
+    console.error("Could not fetch firebase dogs for history mapping", e);
+  }
+
+  // Always hydrate the placeholder "Dog (Firebase Profile)" with real Firebase dog data
+  result = result.map(item => {
+    const currentDog = fbDogs.find(d => d.id === item.dogId);
+    if (currentDog) {
+      return {
+        ...item,
+        dogName: currentDog.name,
+        dogPhoto: currentDog.photo || item.dogPhoto
+      };
+    }
+    return item;
+  });
+
   // Filter for dog owners only (vets see all)
   if (currentUser.accountType === "owner") {
-    // Get user's dogs
-    const dogs = await getDogs();
-    const userDogIds = dogs.map(dog => dog.id);
+    const userDogIds = fbDogs.filter(d => d.userId === currentUser.id).map(d => d.id);
     
     console.log(`User owns ${userDogIds.length} dogs:`, userDogIds);
     
@@ -147,7 +165,7 @@ export const getHistory = async () => {
       }
       return belongs;
     });
-    
+      
     console.log(`Filtered to ${result.length} predictions for user's dogs`);
   }
   
@@ -160,9 +178,24 @@ export const getHistoryByDog = async (dogId) => {
   const feedbacksStr = localStorage.getItem("vetFeedbacks");
   const vetFeedbacks = feedbacksStr ? JSON.parse(feedbacksStr) : {};
 
-  // Attach feedback
+  // Fetch the specific dog's real name from Firebase
+  let realDogName = "Dog (Firebase Profile)";
+  let realDogPhoto = null;
+  try {
+    const fireDog = await getDogById(dogId);
+    if (fireDog) {
+      realDogName = fireDog.name;
+      realDogPhoto = fireDog.photo;
+    }
+  } catch (e) {
+    console.error("Could not fetch dog for history mapping", e);
+  }
+
+  // Attach feedback and merge name
   return response.data.map(item => ({
     ...item,
+    dogName: realDogName,
+    dogPhoto: realDogPhoto || item.dogPhoto,
     vetFeedback: vetFeedbacks[item.id] || null
   }));
 };
@@ -277,14 +310,28 @@ export const getVetCases = async () => {
     const feedbacksStr = localStorage.getItem("vetFeedbacks");
     const vetFeedbacks = feedbacksStr ? JSON.parse(feedbacksStr) : {};
 
+    // Vet Dashboard mapping
+    let allFirebaseDogs = [];
+    let allFirebaseUsers = [];
+    try {
+      const qDogs = await getDocs(collection(db, "dogs"));
+      qDogs.forEach(doc => { allFirebaseDogs.push({ id: doc.id, ...doc.data() }); });
+      
+      const qUsers = await getDocs(collection(db, "users"));
+      qUsers.forEach(doc => { allFirebaseUsers.push({ id: doc.id, ...doc.data() }); });
+    } catch (e) { console.error("Could not fetch firebase metadata for vet dashboard", e); }
+
     // Map history objects to match what the Vet Dashboard expects
     return response.data.map(item => {
       const fb = vetFeedbacks[item.id];
+      const fireDog = allFirebaseDogs.find(d => d.id === item.dogId);
+      const fireUser = fireDog ? allFirebaseUsers.find(u => u.id === fireDog.userId) : null;
+      
       return {
         id: item.id,
-        dogName: item.dogName || "Unknown Patient",
-        ownerName: item.ownerName || "User (Anonymous)",
-        dogPhoto: item.dogPhoto || null,
+        dogName: fireDog ? fireDog.name : (item.dogName || "Unknown Patient"),
+        ownerName: fireUser ? fireUser.name : (item.ownerName || "User (Anonymous)"),
+        dogPhoto: (fireDog && fireDog.photo) ? fireDog.photo : (item.dogPhoto || null),
         uploadDate: item.date,
         classification: item.classification === "Normal" ? "Normal" : "Abnormal",
         confidence: item.confidence,

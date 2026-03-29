@@ -37,20 +37,20 @@ def build_model_from_scratch():
     
     # === LSTM Sequence Processing ===
     # First LSTM layer - matches Kaggle name 'lstm'
-    x = layers.LSTM(256,return_sequences=True,kernel_regularizer=keras.regularizers.l2(0.01),recurrent_dropout=0.2,name='lstm')(features)
+    x = layers.LSTM(64,return_sequences=True,kernel_regularizer=keras.regularizers.l2(0.01),recurrent_dropout=0.2,name='lstm')(features)
     x = layers.Dropout(0.5, name='dropout_1')(x)
     
     # Second LSTM layer - matches Kaggle name 'lstm_1'
-    x = layers.LSTM(128,kernel_regularizer=keras.regularizers.l2(0.01),recurrent_dropout=0.2,name='lstm_1')(x)
+    x = layers.LSTM(32,kernel_regularizer=keras.regularizers.l2(0.01),recurrent_dropout=0.2,name='lstm_1')(x)
     x = layers.Dropout(0.5, name='dropout_2')(x)
     
     # === Dense Classification Layers ===
     # First dense layer - matches Kaggle name 'dense'
-    x = layers.Dense(64,activation='relu',kernel_regularizer=keras.regularizers.l2(0.01),name='dense')(x)
+    x = layers.Dense(32,activation='relu',kernel_regularizer=keras.regularizers.l2(0.01),name='dense')(x)
     x = layers.Dropout(0.3, name='dropout_3')(x)
     
     # Second dense layer - matches Kaggle name 'dense_1'
-    x = layers.Dense(32,activation='relu',kernel_regularizer=keras.regularizers.l2(0.01),name='dense_1')(x)
+    x = layers.Dense(16,activation='relu',kernel_regularizer=keras.regularizers.l2(0.01),name='dense_1')(x)
     x = layers.Dropout(0.4, name='dropout_4')(x)
     
     # Output layer - matches Kaggle name 'dense_2'

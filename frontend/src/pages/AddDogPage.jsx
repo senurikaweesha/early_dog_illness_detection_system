@@ -107,9 +107,9 @@ export const AddDogPage = () => {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Check file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        showToast("File size must be less than 5MB", "error");
+      // Check file size (Firestore limit is 1MB total document size so max 500KB image)
+      if (file.size > 0.5 * 1024 * 1024) {
+        showToast("File size must be less than 500KB. Please compress your image.", "error");
         return;
       }
 

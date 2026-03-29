@@ -10,6 +10,7 @@ export const Badge = ({ variant, children, className = '' }) => {
     // Urgency badges - Square design
     low: 'bg-blue-50 text-blue-700 border border-blue-200',
     moderate: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+    medium: 'bg-orange-50 text-orange-600 border border-orange-200',
     high: 'bg-red-50 text-red-700 border border-red-200',
     
     // Default
@@ -33,6 +34,7 @@ Badge.propTypes = {
     'abnormal',
     'low',
     'moderate',
+    'medium',
     'high',
     'default',
   ]),

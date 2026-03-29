@@ -488,7 +488,13 @@ def predict():
     # Find dog
     dog = next((d for d in dogs_db if d['id'] == dog_id), None)
     if not dog:
-        return jsonify({'error': 'Dog not found'}), 404
+        dog = {
+            'id': dog_id,
+            'name': 'Dog (Firebase Profile)',
+            'photo': None,
+            'userId': 'unknown',
+            'totalAnalyses': 0
+        }
     
     # Validate file type
     allowed_extensions = {'mp4', 'avi', 'mov', 'mkv'}
@@ -723,25 +729,24 @@ if __name__ == '__main__':
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.WARNING)
     
-    # Only show startup message once
-    if debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-        print("\n" + "="*80)
-        print("🐾 TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
-        print("="*80)
+    # Show startup message
+    print("\n" + "="*80)
+    print("🐾 TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
+    print("="*80)
         
-        model = get_model()
-        model_status = "Loaded ✅" if model is not None else "Not Loaded ⚠️"
-        model_params = f"{model.count_params():,} params" if model is not None else "N/A"
-        
-        print(f"  Environment:    {'Development' if debug else 'Production'}")
-        print(f"  API Server:     http://0.0.0.0:{port}")
-        print(f"  AI Model:       {model_status} ({model_params})")
-        print(f"  Database:       {len(users_db)} users, {len(dogs_db)} dogs, {len(history_db)} analyses")
-        print(f"  Debug Mode:     {'ON' if debug else 'OFF'}")
-        print("="*80)
-        print("  Status: Ready to accept requests")
-        if debug:
-            print("  Press CTRL+C to stop the server")
-        print("="*80 + "\n")
+    model = get_model()
+    model_status = "Loaded ✅" if model is not None else "Not Loaded ⚠️"
+    model_params = f"{model.count_params():,} params" if model is not None else "N/A"
+    
+    print(f"  Environment:    {'Development' if debug else 'Production'}")
+    print(f"  API Server:     http://0.0.0.0:{port}")
+    print(f"  AI Model:       {model_status} ({model_params})")
+    print(f"  Database:       {len(users_db)} users, {len(dogs_db)} dogs, {len(history_db)} analyses")
+    print(f"  Debug Mode:     {'ON' if debug else 'OFF'}")
+    print("="*80)
+    print("  Status: Ready to accept requests")
+    if debug:
+        print("  Press CTRL+C to stop the server")
+    print("="*80 + "\n")
     
     app.run(host='0.0.0.0', port=port, debug=debug, use_reloader=False)
