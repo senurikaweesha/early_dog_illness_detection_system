@@ -8,8 +8,8 @@ from tensorflow import keras
 
 # Path to the trained model
 MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(MODEL_DIR, 'best_model_frozen.h5')
-FALLBACK_MODEL_PATH = os.path.join(MODEL_DIR, 'best_model_improved.h5')
+MODEL_PATH = os.path.join(MODEL_DIR, 'best_model_frozen.keras')
+FALLBACK_MODEL_PATH = os.path.join(MODEL_DIR, 'best_model_improved.keras')
 
 def load_model_safe(model_path=None):
     """

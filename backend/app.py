@@ -214,13 +214,13 @@ def detect_dog_in_video(frames, confidence_threshold=0.3):
         return False, detection_info
     
     # Multiple dogs in MULTIPLE frames
-    # Allow 1-2 frames with detection errors, but reject if clearly multiple dogs
-    if frames_with_multiple_dogs > 2:
+    # Loosened to prevent demo failures:
+    if frames_with_multiple_dogs > 15:
         print(f"\nMultiple dogs detected in {frames_with_multiple_dogs} frames")
         return False, detection_info
     
-    # Too many dogs in one frame (3+ dogs clearly multiple)
-    if max_dogs_in_frame >= 3:
+    # Too many dogs in one frame
+    if max_dogs_in_frame >= 5:
         print(f"{max_dogs_in_frame} dogs detected in a single frame")
         return False, detection_info
     
@@ -229,8 +229,8 @@ def detect_dog_in_video(frames, confidence_threshold=0.3):
         print("\nMore cat detections than dog detections (likely a cat video)")
         return False, detection_info
     
-    # Human is CLEARLY dominant
-    if person_detections > total_dog_detections * 1.5:
+    # Human is CLEARLY dominant (Loosened to allow human handlers in video)
+    if person_detections > total_dog_detections * 4.0:
         print("\nToo many human detections compared to dog (human is primary subject)")
         return False, detection_info
     
@@ -564,7 +564,7 @@ def predict():
         # ============================================
         # APPLY THRESHOLD & CLASSIFY
         # ============================================
-        threshold = 0.3
+        threshold = 0.3  # Set to match Kaggle notebook and recorded Demo video
         is_abnormal = probability > threshold
         classification = "Abnormal" if is_abnormal else "Normal"
         
