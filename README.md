@@ -1,5 +1,5 @@
 <div align="center">
-  <h1> TrustPaw AI</h1>
+  <h1> TrustPaw AI 🐾❤️‍🩹🐶</h1>
   <p><strong>Early Dog Illness Detection System</strong></p>
   <p>
     <a href="https://github.com/senurikaweesha/early_dog_illness_detection_system">
@@ -87,7 +87,6 @@ npm run dev
 ##  Contact & Author Info
 
 **Herath Mudiyanselage Nethmini**  
-**Student ID:* 20221487 | W1956416**  
-**Institution:* Informatics Institute of Technology (IIT), University of Westminster, UK**  
-**Supervisor:* Mr. Obhasha Priyankara** 
-**Academic Year:* 2025/2026**
+**Student ID: 20221487 | W1956416**  
+**Institution: Informatics Institute of Technology (IIT), University of Westminster, UK**  
+**Academic Year: 2025/2026**
