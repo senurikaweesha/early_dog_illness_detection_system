@@ -1,6 +1,6 @@
 {
-  "name": "early-dog-illness-detection-frontend",
-  "version": "0.0.1",
+  "name": "trustpaw-ai-early-dog-illness-detection-frontend",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {

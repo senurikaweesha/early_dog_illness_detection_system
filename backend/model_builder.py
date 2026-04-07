@@ -60,7 +60,7 @@ def build_model_from_scratch():
     model = Model(inputs=video_input, outputs=output, name='ImprovedDogIllnessDetector')
     
     print("\nModel architecture built!")
-    print(f"   Total params: {model.count_params():,}")
+    print(f"Total params: {model.count_params():,}")
     
     return model
 

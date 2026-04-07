@@ -731,11 +731,11 @@ if __name__ == '__main__':
     
     # Show startup message
     print("\n" + "="*80)
-    print("🐾 TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
+    print("TRUSTPAW AI - EARLY DOG ILLNESS DETECTION SYSTEM")
     print("="*80)
         
     model = get_model()
-    model_status = "Loaded ✅" if model is not None else "Not Loaded ⚠️"
+    model_status = "Loaded" if model is not None else "Not Loaded"
     model_params = f"{model.count_params():,} params" if model is not None else "N/A"
     
     print(f"  Environment:    {'Development' if debug else 'Production'}")
