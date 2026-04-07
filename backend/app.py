@@ -564,7 +564,7 @@ def predict():
         # ============================================
         # APPLY THRESHOLD & CLASSIFY
         # ============================================
-        threshold = 0.3  # Set to match Kaggle notebook and recorded Demo video
+        threshold = 0.3
         is_abnormal = probability > threshold
         classification = "Abnormal" if is_abnormal else "Normal"
         
