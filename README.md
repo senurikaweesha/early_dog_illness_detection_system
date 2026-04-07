@@ -89,5 +89,4 @@ npm run dev
 **Herath Mudiyanselage Nethmini**  
 **Student ID: 20221487 | W1956416**  
 **Institution: Informatics Institute of Technology (IIT), University of Westminster, UK**  
-**Supervisor: Mr. Obhasha Priyankara** 
 **Academic Year: 2025/2026**
