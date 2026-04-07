@@ -23,7 +23,7 @@ import { Pagination } from "../components/Pagination";
 import { Modal } from "../components/Modal";
 import { Badge } from "../components/ui/Badge";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { getHistory, getDogs, submitVetFeedback } from "../services/api";
+import { getHistory, getDogs, submitVetFeedback, deleteHistory } from "../services/api";
 import { useToast } from "../hooks/useToast";
 import { useAuth } from "../hooks/useAuth";
 import { useFetchData } from "../hooks/useFetchData";
@@ -128,8 +128,14 @@ useEffect(() => {
     setCurrentPage(1);
   }, [history, selectedDog, selectedResult, searchQuery]);
 
-  const handleDelete = (id) => {
-    refetch();
+  const handleDelete = async (id) => {
+    try {
+      await deleteHistory(id);
+      showToast("Prediction deleted successfully", "success");
+      refetch();
+    } catch (error) {
+      showToast("Failed to delete prediction", "error");
+    }
   };
 
   const openDetails = (id) => {

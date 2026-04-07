@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "../components/ui/Button";
+import { ConfirmationDialog } from "../components/ConfirmationDialog";
 import { useToast } from "../hooks/useToast";
 import { getDogs, deleteDog } from "../services/api";
 import { formatAge } from "../utils/helpers";
@@ -12,6 +13,8 @@ export const DogsPage = () => {
   const { showToast } = useToast();
   const [dogs, setDogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [dogToDelete, setDogToDelete] = useState(null);
   
 
   useEffect(() => {
@@ -30,15 +33,17 @@ export const DogsPage = () => {
     }
   };
 
-  const handleDelete = async (dogId) => {
-    if (window.confirm("Are you sure you want to delete this dog profile?")) {
-      try {
-        await deleteDog(dogId);
-        showToast("Dog profile deleted successfully", "success");
-        fetchDogs();
-      } catch (error) {
-        showToast("Failed to delete dog profile", "error");
-      }
+  const handleDelete = async () => {
+    if (!dogToDelete) return;
+    try {
+      await deleteDog(dogToDelete);
+      showToast("Dog profile deleted successfully", "success");
+      fetchDogs();
+    } catch (error) {
+      showToast("Failed to delete dog profile", "error");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDogToDelete(null);
     }
   };
 
@@ -154,7 +159,10 @@ export const DogsPage = () => {
                 <Button
                   variant="ghost"
                   className="flex-1 border border-gray-200 text-red-600 hover:bg-red-50 hover:border-red-200"
-                  onClick={() => handleDelete(dog.id)}
+                  onClick={() => {
+                    setDogToDelete(dog.id);
+                    setIsDeleteDialogOpen(true);
+                  }}
                 >
                   Delete
                 </Button>
@@ -163,6 +171,19 @@ export const DogsPage = () => {
           ))}
         </div>
       )}
+
+      <ConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setDogToDelete(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete Dog Profile?"
+        message="Are you sure you want to delete this dog profile? This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+      />
     </div>
   );
 };
