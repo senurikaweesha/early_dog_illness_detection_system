@@ -108,27 +108,27 @@ export const analyzeVideo = async (videoFile, dogId) => {
 export const getHistory = async () => {
   const currentUserObj = localStorage.getItem("currentUser");
   const currentUser = currentUserObj ? JSON.parse(currentUserObj) : null;
-  
+
   if (!currentUser) {
     console.log("No user logged in");
     return [];
   }
-  
+
   console.log("Fetching history for user:", currentUser.id, currentUser.accountType);
-  
+
   // Get all history from backend
   const historyResponse = await api.get(API_ENDPOINTS.HISTORY);
-  
+
   // Get vet feedbacks
   const feedbacksStr = localStorage.getItem("vetFeedbacks");
   const vetFeedbacks = feedbacksStr ? JSON.parse(feedbacksStr) : {};
-  
+
   // Attach feedback to each item
   let result = historyResponse.data.map(item => ({
     ...item,
     vetFeedback: vetFeedbacks[item.id] || null
   }));
-  
+
   // Fetch all dogs from Firebase to hydrate the placeholders
   let fbDogs = [];
   try {
@@ -154,9 +154,9 @@ export const getHistory = async () => {
   // Filter for dog owners only (vets see all)
   if (currentUser.accountType === "owner") {
     const userDogIds = fbDogs.filter(d => d.userId === currentUser.id).map(d => d.id);
-    
+
     console.log(`User owns ${userDogIds.length} dogs:`, userDogIds);
-    
+
     // Filter predictions to only show user's dogs
     result = result.filter(item => {
       const belongs = userDogIds.includes(item.dogId);
@@ -165,10 +165,10 @@ export const getHistory = async () => {
       }
       return belongs;
     });
-      
+
     console.log(`Filtered to ${result.length} predictions for user's dogs`);
   }
-  
+
   return result;
 };
 
@@ -215,7 +215,7 @@ export const getDogs = async () => {
   const currentUserObj = localStorage.getItem("currentUser");
   if (!currentUserObj) return [];
   const currentUser = JSON.parse(currentUserObj);
-  
+
   try {
     const q = query(collection(db, "dogs"), where("userId", "==", currentUser.id));
     const querySnapshot = await getDocs(q);
@@ -223,7 +223,7 @@ export const getDogs = async () => {
     querySnapshot.forEach((doc) => {
       dogs.push({ id: doc.id, ...doc.data() });
     });
-    
+
     // Dynamically calculate total analyses from backend history
     try {
       const historyResponse = await api.get(API_ENDPOINTS.HISTORY);
@@ -232,12 +232,12 @@ export const getDogs = async () => {
         const analyses = rawHistory.filter(h => h.dogId === dog.id);
         dog.totalAnalyses = analyses.length;
       });
-    } catch(err) {
+    } catch (err) {
       console.warn("Could not fetch history to populate totalAnalyses", err);
     }
-    
+
     return dogs;
-  } catch(error) {
+  } catch (error) {
     console.error("Failed to fetch dogs from Firebase:", error);
     throw new APIError("Failed to fetch dogs", 500, error);
   }
@@ -249,7 +249,7 @@ export const getDogById = async (id) => {
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) throw new Error("Dog not found");
     return { id: docSnap.id, ...docSnap.data() };
-  } catch(error) {
+  } catch (error) {
     throw new APIError("Failed to fetch dog", 500, error);
   }
 };
@@ -258,16 +258,16 @@ export const addDog = async (dogData) => {
   const currentUserObj = localStorage.getItem("currentUser");
   const currentUser = currentUserObj ? JSON.parse(currentUserObj) : null;
   const userId = currentUser?.id || 'unknown';
-  
+
   const dogDataWithUser = {
     ...dogData,
     userId: userId
   };
-  
+
   try {
     const docRef = await addDoc(collection(db, "dogs"), dogDataWithUser);
     return { id: docRef.id, ...dogDataWithUser };
-  } catch(error) {
+  } catch (error) {
     console.error("Failed to add dog to Firebase:", error);
     throw new APIError("Failed to add dog", 500, error);
   }
@@ -278,7 +278,7 @@ export const updateDog = async (id, dogData) => {
     const docRef = doc(db, "dogs", id);
     await updateDoc(docRef, dogData);
     return { id, ...dogData };
-  } catch(error) {
+  } catch (error) {
     throw new APIError("Failed to update dog", 500, error);
   }
 };
@@ -288,7 +288,7 @@ export const deleteDog = async (id) => {
     const docRef = doc(db, "dogs", id);
     await deleteDoc(docRef);
     return { success: true };
-  } catch(error) {
+  } catch (error) {
     throw new APIError("Failed to delete dog", 500, error);
   }
 };
@@ -329,7 +329,7 @@ export const getVetCases = async () => {
     try {
       const qDogs = await getDocs(collection(db, "dogs"));
       qDogs.forEach(doc => { allFirebaseDogs.push({ id: doc.id, ...doc.data() }); });
-      
+
       const qUsers = await getDocs(collection(db, "users"));
       qUsers.forEach(doc => { allFirebaseUsers.push({ id: doc.id, ...doc.data() }); });
     } catch (e) { console.error("Could not fetch firebase metadata for vet dashboard", e); }
@@ -339,7 +339,7 @@ export const getVetCases = async () => {
       const fb = vetFeedbacks[item.id];
       const fireDog = allFirebaseDogs.find(d => d.id === item.dogId);
       const fireUser = fireDog ? allFirebaseUsers.find(u => u.id === fireDog.userId) : null;
-      
+
       return {
         id: item.id,
         dogName: fireDog ? fireDog.name : (item.dogName || "Unknown Patient"),
